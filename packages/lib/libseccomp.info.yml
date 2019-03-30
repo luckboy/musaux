@@ -1,0 +1,12 @@
+name: libseccomp
+version: 2.3.3
+url: 'https://github.com/seccomp/libseccomp/releases/download/v2.3.3'
+ext: tar.gz
+additional_doc_files: [CHANGELOG, README.md]
+depends: [base/glibc]
+enable_shared: true
+enable_static: true
+autoconf: true
+autoconf_args:
+- '--disable-python'
+source_file_sha256: '7fc28f4294cc72e61c529bedf97e705c3acf9c479a8f1a3028d4cd2ca9f3b155'

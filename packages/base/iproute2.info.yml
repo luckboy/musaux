@@ -1,0 +1,7 @@
+name: iproute2
+version: 4.20.0
+url: 'https://www.kernel.org/pub/linux/utils/net/iproute2'
+ext: tar.xz
+additional_doc_files: [README.decnet, README.devel, README.distribution, 'README.iproute2+tc', README.lnstat]
+depends: [base/glibc, base/libcap, base/libelf]
+source_file_sha256: 'c8adaa6a40f888476b23acb283cfa30c0dd55f07b5aa20663ed5ba2ef1f6fda8'

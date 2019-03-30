@@ -1,0 +1,18 @@
+name: krb5
+version: 1.16.3
+url: 'https://kerberos.org/dist/krb5/1.16'
+ext: tar.gz
+additional_doc_files: [NOTICE]
+depends: [base/e2fsprogs, base/glibc, lib/openssl, net/openldap, util/keyutils]
+autoconf_args:
+- '--sysconfdir=/etc'
+- '--localstatedir=/var'
+- '--with-system-et'
+- '--with-system-ss'
+- '--with-ldap'
+- '--without-tcl'
+- '--with-tls-impl=openssl'
+- '--without-libedit'
+- '--without-system-verto'
+fix_ldflags: true
+source_file_sha256: 'e40499df7c6dbef0cf9b11870a0e167cde827737d8b2c06a9436334f08ab9b0d'

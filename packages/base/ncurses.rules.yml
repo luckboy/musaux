@@ -1,0 +1,51 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist3_arch -%}
+"build_dist3_{{arch|ymlqe}}":
+  reqs: ["build_dist2_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    ln -s ncursesw6-config usr/bin/ncurses6-config && \
+    {
+        for file in usr/lib/lib*w.a; do
+            sed_script='s/lib\(.*\)w\.\(.*\)/lib\1\.\2/'
+            name="`basename "$file"`"
+            new_name="`printf '%s' "$name" | sed "$sed_script"`"
+            ln -s "$name" "`dirname "$file"`/$new_name" || exit 1
+        done
+    } && \
+    {
+        for file in usr/lib/lib*w_g.a; do
+            sed_script='s/lib\(.*\)w_g\.\(.*\)/lib\1_g\.\2/'
+            name="`basename "$file"`"
+            new_name="`printf '%s' "$name" | sed "$sed_script"`"
+            ln -s "$name" "`dirname "$file"`/$new_name" || exit 1
+        done
+    } && \
+    {
+        for file in usr/lib/lib*w.so; do
+            sed_script1='s/lib\(.*\)w\.\(.*\)/lib\1\.\2/'
+            sed_script2='s/lib\(.*\)\..*/\1/'
+            name="`basename "$file"`"
+            new_name="`printf '%s' "$name" | sed "$sed_script1"`"
+            lib_name="`printf '%s' "$name" | sed "$sed_script2"`"
+            echo "INPUT(-l$lib_name)" > "`dirname "$file"`/$new_name" || exit 1
+        done
+    } && \
+    {
+        for file in usr/lib/pkgconfig/*w.pc; do
+            sed_script='s/\(.*\)w\.\(.*\)/\1\.\2/'
+            name="`basename "$file"`"
+            new_name="`printf '%s' "$name" | sed "$sed_script"`"
+            ln -s "$name" "`dirname "$file"`/$new_name" || exit 1
+        done
+    } && \
+    {
+        for file in usr/lib/libncursesw.so.*; do
+            mv "$file" "lib/`basename "$file"`" || exit 1
+        done
+    } && \
+    ln -sf "../../lib/`readlink usr/lib/libncursesw.so`" usr/lib/libncursesw.so && \
+    cd "$saved_cwd"
+{%- endblock %}

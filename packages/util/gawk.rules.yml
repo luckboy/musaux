@@ -1,0 +1,13 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist3_arch -%}
+"build_dist3_{{arch|ymlqe}}":
+  reqs: ["build_dist2_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    rm -f usr/bin/gawk && \
+    ln -s 'gawk-{{version|shsqe}}' usr/bin/gawk && \
+    ln -s gawk.1 usr/share/man/man1/awk.1 && \
+    cd "$saved_cwd"
+{%- endblock %}

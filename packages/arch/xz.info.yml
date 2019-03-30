@@ -1,0 +1,9 @@
+name: xz
+version: 5.2.4
+url: 'https://tukaani.org/xz'
+ext: tar.xz
+additional_doc_files: [COPYING.GPLv2, COPYING.GPLv3, COPYING.LGPLv2.1]
+depends: [base/glibc]
+enable_shared: true
+enable_static: true
+source_file_sha256: '9717ae363760dedf573dad241420c5fea86256b65bc21d2cf71b2b12f0544f4b'

@@ -1,0 +1,97 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_distclean_arch -%}
+"build_distclean_{{arch|ymlqe}}":
+{%- if depends and depends != [] %}
+  reqs:
+{%- for depend in (depends or []) %}
+  - ["{{depend|ymlqe}}", "build_dist_{{arch|ymlqe}}"]
+{%- endfor %}
+{%- endif %}
+{%- if not toolchain %}
+  unmake: ["extract_{{arch|ymlqe}}"]
+{%- endif %}
+  cmd: |
+    '{{package_collection_dir|shsqe}}/scripts/sysroot.sh' \
+        '{{arch|shsqe}}' \
+        '{{package|shsqe}}' \
+        rm all
+{%- if toolchain %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-dist'
+{%- else %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}'
+{%- endif %}
+    rm -fr 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}'
+    rm -f 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}.suid_files'
+{%- endblock %}
+
+{% block build_dist2_arch -%}
+"build_dist2_{{arch|ymlqe}}":
+  reqs: ["build_dist1_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    {{gnu_make(["headers_check", "ARCH=" + kernel_arch])}} && \
+    {{gnu_make(["headers_install", "ARCH=" + kernel_arch, 
+        "INSTALL_HDR_PATH=" + work_dir + "/dist/" + arch + "/packages/" + package + "/usr"])}} && \
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block build_dist5_arch -%}
+"build_dist5_{{arch|ymlqe}}":
+  reqs: ["build_dist4_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    {
+        for file in `find usr/include \( -name .install -o -name ..install.cmd \)`; do
+            rm -f "$file" || exit 1
+        done
+    } && \
+    cd "$saved_cwd" && \
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    {
+        if [ -d LICENSES ]; then
+            for doc_file in `(find LICENSES -type f 2> /dev/null; true)`; do
+                mkdir -p "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/doc/{{name|shsqe}}/'"`dirname "$doc_file"`" || exit 1
+                gzip -9c "$doc_file" > "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/doc/{{name|shsqe}}/'"$doc_file.gz" || exit 1
+            done
+        fi
+    } && \
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block clean_dist -%}
+clean_dist:
+  phony: true
+{%- endblock %}
+
+{% block rules -%}
+clean_linux_headers:
+  phony: true
+  unmake:
+{%- if not toolchain %}
+  - "extract_{{arch|ymlqe}}"
+{%- endif %}
+  - "build_distclean_{{arch|ymlqe}}"
+  - "build_dist1_{{arch|ymlqe}}"
+  - "build_dist2_{{arch|ymlqe}}"
+  - "build_dist3_{{arch|ymlqe}}"
+  - "build_dist4_{{arch|ymlqe}}"
+  - "build_dist5_{{arch|ymlqe}}"
+  - "build_dist6_{{arch|ymlqe}}"
+  - "build_dist7_{{arch|ymlqe}}"
+  - "build_dist_{{arch|ymlqe}}"
+  cmd: |
+    '{{package_collection_dir|shsqe}}/scripts/sysroot.sh' \
+        '{{arch|shsqe}}' \
+        '{{package|shsqe}}' \
+        rm all
+{%- if toolchain %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-dist'
+{%- else %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}'
+{%- endif %}
+    rm -fr 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}'
+    rm -f 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}.suid_files'
+{%- endblock %}

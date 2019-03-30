@@ -1,0 +1,11 @@
+#!/bin/sh
+
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+
+echo "Stopping services ..."
+sv -w7 force-stop /service/*
+sv exit /service/*
+
+/etc/init.d/sshdhostkeys stop
+/etc/init.d/network stop
+/etc/init.d/rcK

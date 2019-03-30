@@ -1,0 +1,47 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block extract_arch -%}
+"extract_{{arch|ymlqe}}":
+  reqs: [download]
+  cmd: |
+    mkdir -p 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    (gzip -cd 'download/{{package|shsqe}}/{{source_file|shsqe}}' | tar xf - -C 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}')
+{%- endblock %}
+
+{% block build_dist2_arch -%}
+"build_dist2_{{arch|ymlqe}}":
+  reqs: ["build_dist1_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    mkdir -p "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/zoneinfo' && \
+    {
+        for zone in \
+            africa \
+            antarctica \
+            asia \
+            australasia \
+            etcetera \
+            europe \
+            factory \
+            northamerica \
+            pacificnew \
+            southamerica \
+            systemv \
+            backward; do
+            zic -L /dev/null \
+                -d "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/zoneinfo' \
+                -y yearistype.sh "$zone" || exit 1
+            zic -L /dev/null \
+                -d "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/zoneinfo/posix' \
+                -y yearistype.sh "$zone" || exit 1
+            zic -L leapseconds \
+                -d "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/zoneinfo/right' \
+                -y yearistype.sh "$zone" || exit 1
+        done
+    } && \
+    zic -d "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/zoneinfo' \
+        -p America/New_York && \
+    cp iso3166.tab zone1970.tab zone.tab "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/zoneinfo' && \
+    cd "$saved_cwd"
+{%- endblock %}

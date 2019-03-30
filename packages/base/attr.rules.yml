@@ -1,0 +1,31 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist3_arch -%}
+"build_dist3_{{arch|ymlqe}}":
+  reqs: ["build_dist2_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    mkdir lib && \
+    {
+        for file in usr/lib/libattr.so.*; do
+            mv "$file" "lib/`basename "$file"`" || exit 1
+        done
+    } && \
+    ln -sf "../../lib/`readlink usr/lib/libattr.so`" usr/lib/libattr.so && \
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block build_dist5_arch -%}
+"build_dist5_{{arch|ymlqe}}":
+  reqs: ["build_dist4_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    {
+        for file in CHANGES COPYING COPYING.LGPL PORTING; do
+            gzip -9 "usr/share/doc/attr/$file" || exit 1
+        done
+    } && \
+    cd "$saved_cwd"
+{%- endblock %}

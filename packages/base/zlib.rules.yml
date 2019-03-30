@@ -1,0 +1,36 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist2_arch -%}
+"build_dist2_{{arch|ymlqe}}":
+  reqs: ["build_dist1_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    AR='{{work_dir|shsqe}}/toolchain/{{arch|shsqe}}/bin/{{target|shsqe}}-ar' \
+    CC='{{work_dir|shsqe}}/toolchain/{{arch|shsqe}}/bin/{{target|shsqe}}-gcc' \
+    NM='{{work_dir|shsqe}}/toolchain/{{arch|shsqe}}/bin/{{target|shsqe}}-nm' \
+    RANLIB='{{work_dir|shsqe}}/toolchain/{{arch|shsqe}}/bin/{{target|shsqe}}-ranlib' \
+    ./configure --prefix=/usr/ && \
+    {{make()}} && \
+    {{make(["install", "DESTDIR=" + work_dir + "/dist/" + arch + "/packages/" + package])}} && \
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block build_dist3_arch -%}
+"build_dist3_{{arch|ymlqe}}":
+  reqs: ["build_dist2_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    mkdir lib && \
+    {
+        for file in usr/lib/libz.so.*; do
+            mv "$file" "lib/`basename "$file"`" || exit 1
+        done
+    } && \
+    ln -sf "../../lib/`readlink usr/lib/libz.so`" usr/lib/libz.so && \
+    cd "$saved_cwd"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    tail -n +4 zlib.h | head -n 20 > LICENSE && \
+    cd "$saved_cwd"
+{%- endblock %}

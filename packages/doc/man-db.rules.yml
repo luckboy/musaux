@@ -1,0 +1,22 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist3_arch -%}
+"build_dist3_{{arch|ymlqe}}":
+  reqs: ["build_dist2_{{arch|ymlqe}}"]
+  cmd: |
+    rm -fr 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}no'
+{%- endblock %}
+
+{% block build_dist5_arch -%}
+"build_dist5_{{arch|ymlqe}}":
+  reqs: ["build_dist4_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    {
+        for file in man-db-manual.ps man-db-manual.txt; do
+            gzip -9 "usr/share/doc/man-db/$file" || exit 1
+        done
+    } && \
+    cd "$saved_cwd"
+{%- endblock %}

@@ -1,0 +1,17 @@
+name: inetutils
+version: 1.9.4
+url: 'https://ftp.gnu.org/gnu/inetutils'
+ext: tar.xz
+depends: [base/glibc, base/ncurses, base/readline]
+autoconf: true
+autoconf_args:
+- '--disable-rcp'
+- '--disable-rexec'
+- '--disable-rlogin'
+- '--disable-rsh'
+- '--disable-logger'
+- '--disable-talk'
+- '--disable-whois'
+- '--disable-ifconfig'
+- '--disable-servers'
+source_file_sha256: '849d96f136effdef69548a940e3e0ec0624fc0c81265296987986a0dd36ded37'

@@ -1,0 +1,2 @@
+OPTS="-g u ntp:ntp"
+SERVERS=""

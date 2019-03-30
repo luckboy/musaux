@@ -1,0 +1,34 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist2_arch -%}
+"build_dist2_{{arch|ymlqe}}":
+  reqs: ["build_dist1_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    {{gnu_make(["config.mk",
+        "KERNEL_INCLUDE=" + work_dir + "/sysroot/" + arch + "/usr/include",
+        "CC=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-gcc",
+        "LEX=" + work_dir + "/toolchain/" + arch + "/bin/flex",
+        "YACC=" + work_dir + "/toolchain/" + arch + "/bin/bison"
+    ], {
+        "PKG_CONFIG_SYSROOT_DIR": work_dir + "/sysroot/" + arch,
+        "AR": work_dir + "/toolchain/" + arch + "/bin/" + target + "-ar",
+        "CC": work_dir + "/toolchain/" + arch + "/bin/" + target + "-gcc",
+        "PKG_CONFIG":  work_dir + "/toolchain/" + arch + "/bin/pkg-config"
+    })}} && \
+    {{gnu_make([
+        "KERNEL_INCLUDE=" + work_dir + "/sysroot/" + arch + "/usr/include",
+        "LDFLAGS=" + rpath_link_ldflags,
+        "LEX=" + work_dir + "/toolchain/" + arch + "/bin/flex",
+        "YACC=" + work_dir + "/toolchain/" + arch + "/bin/bison"], {
+        "PKG_CONFIG_SYSROOT_DIR": work_dir + "/sysroot/" + arch
+    })}} && \
+    {{gnu_make(["install", "DESTDIR=" + work_dir + "/dist/" + arch + "/packages/" + package,
+        "KERNEL_INCLUDE=" + work_dir + "/sysroot/" + arch + "/usr/include",
+        "LEX=" + work_dir + "/toolchain/" + arch + "/bin/flex",
+        "YACC=" + work_dir + "/toolchain/" + arch + "/bin/bison"], {
+        "PKG_CONFIG_SYSROOT_DIR": work_dir + "/sysroot/" + arch
+    })}} && \
+    cd "$saved_cwd"
+{%- endblock %}

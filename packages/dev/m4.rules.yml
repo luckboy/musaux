@@ -1,0 +1,14 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist1_arch -%}
+"build_dist1_{{arch|ymlqe}}":
+  reqs: 
+  - "build_distclean_{{arch|ymlqe}}"
+  - "extract_{{arch|ymlqe}}"
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c && \
+    echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h && \
+    cd "$saved_cwd"
+{%- endblock %}

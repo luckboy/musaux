@@ -1,0 +1,10 @@
+#!/bin/sh
+
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+
+/etc/init.d/rcS
+/etc/init.d/network start
+/etc/init.d/sshdhostkeys start
+
+touch /etc/runit/stopit
+chmod 0 /etc/runit/stopit

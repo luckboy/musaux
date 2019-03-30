@@ -1,0 +1,7 @@
+name: libcap
+version: '2.26'
+url: 'https://mirrors.edge.kernel.org/pub/linux/libs/security/linux-privs/libcap2'
+ext: tar.xz
+depends: ['base/Linux-PAM', base/glibc]
+doc_files: [License, CHANGELOG, README]
+source_file_sha256: 'b630b7c484271b3ba867680d6a14b10a86cfa67247a14631b14c06731d5a458b'

@@ -1,0 +1,16 @@
+name: gmp
+version: 6.1.2
+url: 'https://gmplib.org/download/gmp'
+ext: tar.xz
+additional_doc_files: [COPYING.LESSERv3, COPYINGv2, COPYINGv3]
+depends: [base/glibc]
+enable_shared: true
+enable_static: true
+autoconf: true
+autoconf_args:
+- '--enable-cxx'
+fix_libtool: true
+toolchain: true
+toolchain_disable_shared: true
+toolchain_enable_static: true
+source_file_sha256: '87b565e89a9a684fe4ebeeddb8399dce2599f9c9049854ca8c0dfbdea0e21912'

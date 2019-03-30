@@ -1,0 +1,37 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist3_arch -%}
+"build_dist3_{{arch|ymlqe}}":
+  reqs: ["build_dist2_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    mkdir -p usr/sbin && \
+    {
+        for prog in ntp-keygen ntp-wait ntpd ntptime; do
+            mv "usr/bin/$prog" "usr/sbin/$prog" || exit 1
+        done
+    } && \
+    mkdir -p usr/share/man/man8 && \
+    {
+        for man in ntp-keygen.1 ntp-wait.1 ntpd.1; do
+            sed -i 's/^\.TH \([^ ]*\) 1/.TH \1 8/' "usr/share/man/man1/$man" || exit 1
+            mv "usr/share/man/man1/$man" "usr/share/man/man8/`basename "$man" .1`.8" || exit 1
+        done
+    } && \
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block build_dist5_arch -%}
+"build_dist5_{{arch|ymlqe}}":
+  reqs: ["build_dist4_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    {
+        for file in usr/share/doc/ntp/*.html usr/share/doc/sntp/*.html; do
+            gzip -9 "$file" || exit 1
+        done
+    } && \
+    cd "$saved_cwd"
+{%- endblock %}

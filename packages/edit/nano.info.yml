@@ -1,0 +1,14 @@
+name: nano
+version: '3.2'
+url: 'https://www.nano-editor.org/dist/v3'
+ext: tar.xz
+depends: [base/glibc, base/ncurses, base/zlib]
+autoconf: true
+autoconf_args:
+- '--sysconfdir=/etc'
+- '--enable-threads=posix'
+- '--enable-color'
+- '--enable-multibuffer'
+- '--enable-nanorc'
+- '--disable-wrapping-as-root'
+source_file_sha256: 'd12773af3589994b2e4982c5792b07c6240da5b86c5aef2103ab13b401fe6349'

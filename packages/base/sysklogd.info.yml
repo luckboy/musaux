@@ -1,0 +1,6 @@
+name: sysklogd
+version: 1.5.1
+url: http://www.infodrom.org/projects/sysklogd/download
+ext: tar.gz
+additional_doc_files: [ANNOUNCE, COPYING, MANIFEST, README.1st, README.linux]
+depends: [base/glibc]

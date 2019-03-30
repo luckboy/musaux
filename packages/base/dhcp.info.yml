@@ -1,0 +1,16 @@
+name: dhcp
+version: 4.4.1
+url: 'https://ftp.isc.org/isc/dhcp/4.4.1'
+ext: tar.gz
+additional_doc_files: [RELNOTES]
+depends: [base/glibc, base/zlib]
+autoconf_args:
+- '--sbindir=/sbin'
+- '--sysconfdir=/etc'
+- '--localstatedir=/var'
+- '--with-randomdev=/dev/random'
+- '--without-ldap'
+- '--without-ldapcrypto'
+- '--without-ldap-gssapi'
+- '--without-ldapcasa'
+source_file_sha256: '2a22508922ab367b4af4664a0472dc220cc9603482cf3c16d9aff14f3a76b608'

@@ -1,0 +1,15 @@
+name: p11-kit
+version: 0.23.15
+url: 'https://github.com/p11-glue/p11-kit/releases/download/0.23.15'
+ext: tar.gz
+additional_doc_files: [HACKING]
+depends: [base/glibc, lib/libffi, lib/libtasn1]
+enable_shared: true
+autoconf: true
+autoconf_args:
+- '--sysconfdir=/etc'
+- '--with-libtasn1'
+- '--with-libffi'
+- '--with-trust-paths=/etc/ssl'
+- '--without-systemd'
+source_file_sha256: 'f7c139a0c77a1f0012619003e542060ba8f94799a0ef463026db390680e4d798'

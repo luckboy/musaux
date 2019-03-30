@@ -1,0 +1,19 @@
+name: openssl
+version: 1.1.1b
+url: 'https://www.openssl.org/source'
+ext: tar.gz
+additional_doc_files:
+- ACKNOWLEDGEMENTS
+- CHANGES
+- CONTRIBUTING
+- FAQ
+- NOTES.ANDROID
+- NOTES.DJGPP
+- NOTES.PERL
+- NOTES.UNIX
+- NOTES.VMS
+- NOTES.WIN
+- README.ENGINE
+- README.FIPS
+depends: [base/glibc, base/zlib]
+source_file_sha256: '5c557b023230413dfb0756f3137a13e6d726838ccd1430888ad15bfb2b43ea4b'

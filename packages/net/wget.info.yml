@@ -1,0 +1,11 @@
+name: wget
+version: 1.20.1
+url: 'https://ftp.gnu.org/gnu/wget'
+ext: tar.gz
+depends: [base/glibc, base/util-linux, base/zlib, lib/libidn2, lib/libpsl, lib/openssl, lib/pcre]
+autoconf: true
+autoconf_args:
+- '--sysconfdir=/etc'
+- '--with-ssl=openssl'
+fix_ldflags: true
+source_file_sha256: 'b783b390cb571c837b392857945f5a1f00ec6b043177cc42abb8ee1b542ee1b3'

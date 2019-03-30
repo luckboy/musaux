@@ -1,0 +1,11 @@
+name: isl
+version: '0.19'
+url: 'http://isl.gforge.inria.fr'
+ext: tar.xz
+depends: [base/glibc, lib/gmp]
+fix_ldflags: true
+toolchain: true
+toolchain_depends: [lib/gmp]
+toolchain_disable_shared: true
+toolchain_enable_static: true
+source_file_sha256: '6d6c1aa00e2a6dfc509fa46d9a9dbe93af0c451e196a670577a148feecf6b8a5'

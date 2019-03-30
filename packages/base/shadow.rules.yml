@@ -1,0 +1,23 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist3_arch -%}
+"build_dist3_{{arch|ymlqe}}":
+  reqs: ["build_dist2_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    rm -f bin/groups && \
+    rm -f usr/share/man/man1/groups.1 && \
+    rm -f usr/share/man/*/man1/groups.1 && \
+    {
+        for file in bin/su usr/bin/chage usr/bin/chfn usr/bin/chsh usr/bin/gpasswd \
+            usr/bin/newgidmap usr/bin/newgrp usr/bin/newuidmap usr/bin/passwd; do
+            chmod 755 "$file" || exit 1
+            printf '%s\n' "$file" >> "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}.suid_files' || exit 1
+        done
+    } && \
+    cd "$saved_cwd" && \
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    head -n 31 lib/commonio.c > LICENSE && \
+    cd "$saved_cwd"
+{%- endblock %}

@@ -1,0 +1,30 @@
+name: 'util-linux'
+version: 2.33.1
+url: 'https://www.kernel.org/pub/linux/utils/util-linux/v2.33'
+ext: tar.xz
+additional_doc_files: [README.licensing]
+depends: ['base/Linux-PAM', base/glibc, 'base/libcap-ng', base/ncurses, base/zlib]
+enable_shared: true
+enable_static: true
+autoconf: true
+autoconf_args:
+- 'ADJTIME_PATH=/var/lib/hwclock/adjtime'
+- '--sysconfdir=/etc'
+- '--disable-chfn-chsh'
+- '--disable-login'
+- '--disable-nologin'
+- '--disable-su'
+- '--disable-makeinstall-chown'
+- '--disable-makeinstall-setuid'
+- '--without-selinux'
+- '--without-audit'
+- '--without-udev'
+- '--without-slang'
+- '--without-tinfo'
+- '--without-readline'
+- '--without-user'
+- '--without-systemd'
+- '--without-systemdsystemunitdir'
+- '--without-python'
+fix_ldflags: true
+source_file_sha256: 'c14bd9f3b6e1792b90db87696e87ec643f9d63efa0a424f092a5a6b2f2dbef21'

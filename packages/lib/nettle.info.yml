@@ -1,0 +1,12 @@
+name: nettle
+version: 3.4.1
+url: 'https://ftp.gnu.org/gnu/nettle'
+ext: tar.gz
+additional_doc_files: [CONTRIBUTTING.md, COPYING.LESSERv3, COPYINGv2, COPYINGv3]
+depends: [base/glibc, lib/gmp]
+enable_shared: true
+enable_static: true
+autoconf: true
+autoconf_args:
+- '--disable-openssl'
+source_file_sha256: 'f941cf1535cd5d1819be5ccae5babef01f6db611f9b5a777bae9c7604b8a92ad'

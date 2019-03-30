@@ -1,0 +1,269 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_distclean_arch -%}
+"build_distclean_{{arch|ymlqe}}":
+  reqs:
+  - [toolchain, "build_toolchain_{{arch|ymlqe}}"]
+{%- for depend in (depends or []) %}
+  - ["{{depend|ymlqe}}", "build_dist_{{arch|ymlqe}}"]
+{%- endfor %}
+{%- if not toolchain %}
+  unmake: ["extract_{{arch|ymlqe}}"]
+{%- endif %}
+  cmd: |
+{%- if toolchain %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-dist'
+{%- else %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}'
+{%- endif %}
+    rm -fr 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}'
+    rm -f 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}.suid_files'
+{%- endblock %}
+
+{% block build_dist2_arch -%}
+"build_dist2_{{arch|ymlqe}}":
+  reqs: ["build_dist1_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    {{configure_for_autoconf(
+        (autoconf_args or []) + ((arch == "arm" and ["--with-float=soft"]) or (arch == "armhf" and ["--with-float=hard"]) or []),
+        {
+            "PKG_CONFIG_SYSROOT_DIR": work_dir + "/sysroot/" + arch,
+            "CC_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-gcc",
+            "CXX_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-g++",
+            "GCC_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-gcc",
+            "GCJ_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-gcj",
+            "GFORTRAN_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-gfortran",
+            "GOC_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-gccgo",
+            "AR_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-ar",
+            "AS_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-as",
+            "DLLTOOL_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-dlltool",
+            "LD_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-ld",
+            "LIPO_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-lipo",
+            "NM_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-nm",
+            "OBJCOPY_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-objcopy",
+            "OBJDUMP_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-objdump",
+            "RANLIB_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-ranlib",
+            "READELF_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-readelf",
+            "STRIP_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-strip",
+            "WINDRES_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-windres",
+            "WINDMC_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-windmc"
+        },
+        prefix = "/usr",
+        host = target,
+        enable_multilib = enable_multilib,
+        disable_multilib = disable_multilib,
+        enable_nls = enable_nls,
+        disable_nls = disable_nls,
+        enable_shared = enable_shared,
+        disable_shared = disable_shared,
+        enable_static = enable_static,
+        disable_static = disable_static,
+        build_dir = (toolchain or None) and (work_dir + "/build/" + arch + "/" + package + "/" + source_dir + "-dist"),
+        toolchain_dir = work_dir + "/toolchain/" + arch,
+        pkg_config = work_dir + "/toolchain/" + arch + "/bin/pkg-config",
+        ldflags = fix_ldflags and rpath_link_ldflags)}} && \
+{%- if fix_libtool %}
+    sed -i 's/^hardcode_libdir_flag_spec=.*/hardcode_libdir_flag_spec=""/' libtool && \
+    sed -i 's/^runpath_var=.*/runpath_var=""/' libtool && \
+{%- endif %}
+    {{make()}} && \
+    {{make(["install", "DESTDIR=" + work_dir + "/dist/" + arch + "/packages/" + package])}} && \
+    {{leave_from_build_dir_for_autoconf()}} && \
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block build_dist3_arch -%}
+"build_dist3_{{arch|ymlqe}}":
+  reqs: ["build_dist2_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    {
+        for prog in c++ cpp g++ gcc gcc-ar gcc-nm gcc-ranlib gcov gcov-dump gcov-tool; do
+            rm -f 'usr/bin/{{target|shsqe}}-'"$prog" || exit 1
+            ln -s "$prog" 'usr/bin/{{target|shsqe}}-'"$prog" || exit 1
+        done
+    } && \
+    rm -f 'usr/bin/{{target|shsqe}}-gcc-{{version|shsqe}}' && \
+    ln -s gcc usr/bin/cc && \
+    rm -f usr/bin/c++ && \
+    ln -s g++ usr/bin/c++ && \
+    mkdir lib && \
+    ln -s ../usr/bin/cpp lib/cpp && \
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block build_dist6_arch -%}
+"build_dist6_{{arch|ymlqe}}":
+  reqs: ["build_dist5_{{arch|ymlqe}}"]
+{%- endblock %}
+
+{% block clean_dist -%}
+clean_dist:
+  phony: true
+  unmake:
+{%- if not toolchain %}
+  - "extract_{{arch|ymlqe}}"
+{%- endif %}
+  - "build_distclean_{{arch|ymlqe}}"
+  - "build_dist1_{{arch|ymlqe}}"
+  - "build_dist2_{{arch|ymlqe}}"
+  - "build_dist3_{{arch|ymlqe}}"
+  - "build_dist4_{{arch|ymlqe}}"
+  - "build_dist5_{{arch|ymlqe}}"
+  - "build_dist6_{{arch|ymlqe}}"
+  - "build_dist7_{{arch|ymlqe}}"
+  - "build_dist_{{arch|ymlqe}}"
+  cmd: |
+{%- if toolchain %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-dist'
+{%- else %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}'
+{%- endif %}
+    rm -fr 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}'
+    rm -f 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}.suid_files'
+{%- endblock %}
+
+{% block build_toolchainclean_arch -%}
+"build_toolchainclean_{{arch|ymlqe}}":
+  reqs:
+  - [base/glibc, "build_dist_{{arch|ymlqe}}"]
+  cmd: |
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-toolchain'
+{%- endblock %}
+
+{% block build_toolchain2_arch -%}
+"build_toolchain2_{{arch|ymlqe}}":
+  reqs: ["build_toolchain1_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    {{configure_for_autoconf(
+        (toolchain_autoconf_args or []) + [
+            "--with-mpc=" + work_dir + "/toolchain/" + arch,
+            "--with-mpfr=" + work_dir + "/toolchain/" + arch,
+            "--with-gmp=" + work_dir + "/toolchain/" + arch,
+            "--with-isl=" + work_dir + "/toolchain/" + arch,
+            "--with-sysroot=" + work_dir + "/sysroot/" + arch
+        ] + ((arch == "arm" and ["--with-float=soft"]) or (arch == "armhf" and ["--with-float=hard"]) or []),
+        prefix = work_dir + "/toolchain/" + arch,
+        target = (toolchain_target_opt or None) and target,
+        enable_multilib = toolchain_enable_multilib,
+        disable_multilib = toolchain_disable_multilib,
+        enable_nls = toolchain_enable_nls,
+        disable_nls = toolchain_disable_nls,
+        enable_shared = toolchain_enable_shared,
+        disable_shared = toolchain_disable_shared,
+        enable_static = toolchain_enable_static,
+        disable_static = toolchain_disable_static,
+        build_dir = work_dir + "/build/" + arch + "/" + package + "/" + source_dir + "-toolchain")}} && \
+    {{make()}} && \
+    {{make(["install"])}} && \
+    {{leave_from_build_dir_for_autoconf()}} && \
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block clean_toolchain -%}
+clean_toolchain:
+  phony: true
+  reqs:
+{%- for depend in (toolchain_depends or []) %}
+  - ["{{depend|ymlqe}}", clean_toolchain]
+{%- endfor %}
+  - [base/glibc, clean_glibc]
+  unmake:
+  - "build_bootstrapclean_{{arch|ymlqe}}"
+  - "build_bootstrap1_{{arch|ymlqe}}"
+  - "build_bootstrap2_{{arch|ymlqe}}"
+  - "build_bootstrap_{{arch|ymlqe}}"
+  - "build_toolchainclean_{{arch|ymlqe}}"
+  - "build_toolchain1_{{arch|ymlqe}}"
+  - "build_toolchain2_{{arch|ymlqe}}"
+  - "build_toolchain3_{{arch|ymlqe}}"
+  - "build_toolchain_{{arch|ymlqe}}"
+  cmd: |
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-bootstrap'
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-toolchain'
+{%- endblock %}
+
+{% block rules -%}
+"build_bootstrapclean_{{arch|ymlqe}}":
+{%- if toolchain_depends and toolchain_depends != [] %}
+  reqs:
+{%- for depend in (toolchain_depends or []) %}
+  - ["{{depend|ymlqe}}", "build_toolchain_{{arch|ymlqe}}"]
+{%- endfor %}
+{%- endif %}
+  cmd: |
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-bootstrap'
+
+"build_bootstrap1_{{arch|ymlqe}}":
+  reqs:
+  - "build_bootstrapclean_{{arch|ymlqe}}"
+  - "extract_{{arch|ymlqe}}"
+  cmd: |
+    saved_cwd="`pwd`"
+    mkdir -p '{{work_dir|shsqe}}/sysroot/{{arch|shsqe}}/usr/include' && \
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    {{configure_for_autoconf(
+        (bootstrap_autoconf_args or []) + [
+            "--with-as=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-as",
+            "--with-ld=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-ld",
+            "--with-mpc=" + work_dir + "/toolchain/" + arch,
+            "--with-mpfr=" + work_dir + "/toolchain/" + arch,
+            "--with-gmp=" + work_dir + "/toolchain/" + arch,
+            "--with-isl=" + work_dir + "/toolchain/" + arch,
+            "--with-sysroot=" + work_dir + "/sysroot/" + arch
+        ] + ((arch == "arm" and ["--with-float=soft"]) or (arch == "armhf" and ["--with-float=hard"]) or []),
+        {
+            "AR_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-ar",
+            "AS_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-as",
+            "DLLTOOL_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-dlltool",
+            "LD_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-ld",
+            "LIPO_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-lipo",
+            "NM_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-nm",
+            "OBJCOPY_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-objcopy",
+            "OBJDUMP_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-objdump",
+            "RANLIB_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-ranlib",
+            "READELF_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-readelf",
+            "STRIP_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-strip",
+            "WINDRES_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-windres",
+            "WINDMC_FOR_TARGET": work_dir + "/toolchain/" + arch + "/bin/" + target + "-windmc"
+        },
+        prefix = work_dir + "/bootstrap/" + arch,
+        target = (toolchain_target_opt or None) and target,
+        enable_multilib = bootstrap_enable_multilib,
+        disable_multilib = bootstrap_disable_multilib,
+        enable_nls = bootstrap_enable_nls,
+        disable_nls = bootstrap_disable_nls,
+        enable_shared = bootstrap_enable_shared,
+        disable_shared = bootstrap_disable_shared,
+        enable_static = bootstrap_enable_static,
+        disable_static = bootstrap_disable_static,
+        build_dir = work_dir + "/build/" + arch + "/" + package + "/" + source_dir + "-bootstrap")}} && \
+    {{make(["all-gcc"])}} && \
+    {{make(["install-gcc"])}} && \
+    {{leave_from_build_dir_for_autoconf()}} && \
+    cd "$saved_cwd"
+
+"build_bootstrap2_{{arch|ymlqe}}":
+  reqs: [[base/glibc, "build_headers_{{arch|ymlqe}}"]]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    {{enter_to_build_dir_for_autoconf(
+        build_dir = work_dir + "/build/" + arch + "/" + package + "/" + source_dir + "-bootstrap")}} && \
+    {{make(["all-target-libgcc"])}} && \
+    {{make(["install-target-libgcc"])}} && \
+    {{leave_from_build_dir_for_autoconf()}} && \
+    cd "$saved_cwd"
+    
+"build_bootstrap_{{arch|ymlqe}}":
+  reqs: ["build_bootstrap2_{{arch|ymlqe}}"]
+
+build_bootstrap:
+  phony: true
+  reqs: ["build_bootstrap_{{arch|ymlqe}}"]
+{%- endblock %}

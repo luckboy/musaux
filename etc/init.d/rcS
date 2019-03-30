@@ -1,0 +1,23 @@
+#!/bin/sh
+
+echo "Mounting virtual filesystems ..."
+mount -t proc proc /proc
+mkdir /dev/shm /dev/pts
+mount -t tmpfs tmpfs /dev/shm
+mount -t devpts -o gid=5,mode=620 devpts /dev/pts
+mount -t sysfs sysfs /sys
+mount -t tmpfs tmpfs /run
+mkdir /run/dbus /run/krb5kdc /run/lock
+
+echo "Remounting root filesystem ..."
+ln -sf "`sed 's/^\(\|.* \)root=\([^ ]*\).*$/\2/' /proc/cmdline`" /dev/root
+mount -o remount,rw /dev/root /
+
+echo "Mounting filesystems in /etc/fstab ..."
+mount -a
+
+echo "Setting hostname ..."
+hostname -F /etc/hostname
+
+echo "Activating loopback interface ..."
+ifconfig lo 127.0.0.1 netmask 255.0.0.0 up

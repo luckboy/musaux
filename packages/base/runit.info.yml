@@ -1,0 +1,8 @@
+name: runit
+version: 2.1.2
+url: 'http://smarden.org/runit'
+ext: tar.gz
+source_dir: admin
+doc_dir: 'runit-2.1.2/package'
+additional_doc_files: [CHANGES]
+depends: [base/glibc]

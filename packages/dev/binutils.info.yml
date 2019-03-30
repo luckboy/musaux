@@ -1,0 +1,32 @@
+name: binutils
+version: 2.31.1
+url: 'https://ftp.gnu.org/gnu/binutils'
+ext: tar.xz
+additional_doc_files: [COPYING.LIB, COPYING3, COPYING3.LIB, MAINTAINERS]
+depends: [base/glibc, base/zlib]
+disable_multilib: true
+enable_shared: true
+enable_static: true
+autoconf: true
+autoconf_args:
+- '--disable-werror'
+- '--with-system-zlib'
+- '--without-mpc'
+- '--without-mpfr'
+- '--without-gmp'
+- '--without-isl'
+fix_ldflags: true
+toolchain: true
+toolchain_target_opt: true
+toolchain_disable_multilib: true
+toolchain_disable_nls: true
+toolchain_disable_shared: true
+toolchain_enable_static: true
+toolchain_autoconf: true
+toolchain_autoconf_args:
+- '--disable-werror'
+- '--without-mpc'
+- '--without-mpfr'
+- '--without-gmp'
+- '--without-isl'
+source_file_sha256: '5d20086ecf5752cc7d9134246e9588fa201740d540f7eb84d795b1f7a93bca86'

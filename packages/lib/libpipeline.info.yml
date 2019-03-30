@@ -1,0 +1,11 @@
+name: libpipeline
+version: 1.5.1
+url: 'https://download.savannah.gnu.org/releases/libpipeline'
+ext: tar.gz
+depends: [base/glibc]
+enable_shared: true
+enable_static: true
+autoconf: true
+autoconf_args:
+- '--enable-threads=posix'
+source_file_sha256: 'd633706b7d845f08b42bc66ddbe845d57e726bf89298e2cee29f09577e2f902f'

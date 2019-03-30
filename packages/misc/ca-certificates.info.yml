@@ -1,0 +1,7 @@
+name: ca-certificates
+version: '20190110'
+url: 'http://http.debian.net/debian/pool/main/c/ca-certificates'
+source_file: 'ca-certificates_20190110.tar.xz'
+doc_dir: debian
+doc_files: [README.Debian, README.source, changelog, copyright]
+source_file_sha256: 'ee4bf0f4c6398005f5b5ca4e0b87b82837ac5c3b0280a1cb3a63c47555c3a675'

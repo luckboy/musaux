@@ -1,0 +1,12 @@
+diff -Naur openssh-7.9p1-orig/Makefile.in openssh-7.9p1/Makefile.in
+--- openssh-7.9p1-orig/Makefile.in	2018-10-17 02:01:20.000000000 +0200
++++ openssh-7.9p1/Makefile.in	2018-11-05 08:28:25.262524966 +0100
+@@ -319,7 +319,7 @@
+ 	$(AUTORECONF)
+ 	-rm -rf autom4te.cache .depend.bak
+ 
+-install: $(CONFIGFILES) $(MANPAGES) $(TARGETS) install-files install-sysconf host-key check-config
++install: $(CONFIGFILES) $(MANPAGES) $(TARGETS) install-files install-sysconf host-key
+ install-nokeys: $(CONFIGFILES) $(MANPAGES) $(TARGETS) install-files install-sysconf
+ install-nosysconf: $(CONFIGFILES) $(MANPAGES) $(TARGETS) install-files
+ 

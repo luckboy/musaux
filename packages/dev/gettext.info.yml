@@ -1,0 +1,16 @@
+name: gettext
+version: 0.19.8.1
+url: 'https://ftp.gnu.org/pub/gnu/gettext'
+ext: tar.xz
+additional_doc_files: [DEPENDENCIES, HACKING, PACKAGING]
+depends: [base/acl, base/glibc, base/ncurses, lib/glib, lib/libcroco, lib/libunistring]
+enable_shared: true
+enable_static: true
+autoconf_args:
+- '--enable-threads=posix'
+- '--disable-openmp'
+- '--without-libpth-prefix'
+- '--with-bzip2'
+- '--with-xz'
+fix_ldflags: true
+source_file_sha256: '105556dbc5c3fbbc2aa0edb46d22d055748b6f5c7cd7a8d99f8e7eb84e938be4'

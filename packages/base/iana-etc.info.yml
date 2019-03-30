@@ -1,0 +1,6 @@
+name: 'iana-etc'
+version: '2.30'
+url: 'http://anduin.linuxfromscratch.org/LFS'
+ext: tar.bz2
+no_doc_files: true
+source_file_sha256: 'b9a6874fb20012836efef75452ef2acae624022d680feeb1994d73facba3f20d'

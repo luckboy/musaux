@@ -1,0 +1,23 @@
+name: glib
+version: 2.58.3
+url: 'https://download.gnome.org/sources/glib/2.58'
+ext: tar.xz
+additional_doc_files: [CONTRIBUTING.md, HACKING, README.md, README.rationale, README.win32]
+depends: [base/glibc, base/libelf, base/util-linux, base/zlib, dev/dbus, lib/libffi, lib/pcre]
+enable_shared: true
+enable_static: true
+autoconf: true
+autoconf_args:
+- '--disable-selinux'
+- '--disable-fam'
+- '--disable-xattr'
+- '--enable-libmount'
+- '--enable-man'
+- '--disable-dtrace'
+- '--disable-systemtap'
+- '--disable-coverage'
+- '--with-python=/usr/bin/python'
+- '--with-threads=posix'
+- '--with-pcre=system'
+fix_ldflags: true
+source_file_sha256: '8f43c31767e88a25da72b52a40f3301fefc49a665b56dc10ee7cc9565cbe7481'

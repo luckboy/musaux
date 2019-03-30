@@ -1,0 +1,5 @@
+name: diffutils
+version: '3.7'
+url: 'https://ftp.gnu.org/gnu/diffutils'
+ext: tar.xz
+depends: [base/glibc]

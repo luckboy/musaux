@@ -1,0 +1,9 @@
+name: libidn2
+version: 2.1.1
+url: 'https://ftp.gnu.org/gnu/libidn'
+ext: tar.gz
+additional_doc_files: [COPYING.LESSERv3, COPYING.unicode, COPYINGv2]
+depends: [base/glibc, lib/libunistring]
+enable_shared: true
+enable_static: true
+source_file_sha256: '95416080329298a13269e13175041b530cec3d98b54cafae9424b8dfd22078b1'

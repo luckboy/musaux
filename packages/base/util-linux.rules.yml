@@ -1,0 +1,35 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist3_arch -%}
+"build_dist3_{{arch|ymlqe}}":
+  reqs: ["build_dist2_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    {
+        for file in bin/mount bin/umount; do
+            chmod 755 "$file" || exit 1
+            printf '%s\n' "$file" >> "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}.suid_files' || exit 1
+        done
+    } && \
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block build_dist5_arch -%}
+"build_dist5_{{arch|ymlqe}}":
+  reqs: ["build_dist4_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}/Documentation/licenses' && \
+    {
+        for doc_file in COPYING.*; do
+            mkdir -p "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/doc/{{name|shsqe}}' || exit 1
+            gzip -9c "$doc_file" > "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/doc/{{name|shsqe}}/'"$doc_file.gz" || exit 1
+        done
+    } && \
+    cd "$saved_cwd"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}/Documentation' && \
+    mkdir -p "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/doc/{{name|shsqe}}' || exit 1
+    gzip -9c TODO > "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/doc/{{name|shsqe}}/TODO.gz' || exit 1
+    cd "$saved_cwd"
+{%- endblock %}

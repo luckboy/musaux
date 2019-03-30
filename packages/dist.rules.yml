@@ -1,0 +1,233 @@
+{%- extends "templates/base.rules.yml" -%}
+
+{%- set depends = depends or list(packages(package_collection_dir)) -%}
+{%- set _ = depends.sort() -%}
+{%- set packages_to_remove = [] -%}
+{%- for package in depends -%}
+{%- if match("^boot/.*", package) -%}
+{%- set _ = packages_to_remove.append(package) -%}
+{%- endif -%}
+{%- endfor -%}
+{%- for package in packages_to_remove -%}
+{%- for i in range(0, depends.count(package)) -%}
+{%- set _ = depends.remove(package) -%}
+{%- endfor -%}
+{%- endfor -%}
+{%- for i in range(0, depends.count(kernel_package)) -%}
+{%- set _ = depends.remove(kernel_package) -%}
+{%- endfor -%}
+{%- for i in range(0, depends.count("dist")) -%}
+{%- set _ = depends.remove("dist") -%}
+{%- endfor -%}
+{%- for i in range(0, depends.count("toolchain")) -%}
+{%- set _ = depends.remove("toolchain") -%}
+{%- endfor -%}
+{%- for package in (excluded_packages or "").split(",") -%}
+{%- for i in range(0, depends.count(package)) -%}
+{%- set _ = depends.remove(package) -%}
+{%- endfor -%}
+{%- endfor -%}
+
+{% block base_rules -%}
+
+"build_boot_package_{{arch|ymlqe}}__{{boot_platform|ymlqe}}":
+  reqs: [["{{boot_package|shsqe}}", "build_dist_{{arch|ymlqe}}__{{boot_platform|ymlqe}}"]]
+
+build_boot_package:
+  phony: true
+  reqs: ["build_boot_package_{{arch|ymlqe}}__{{boot_platform|ymlqe}}"]
+
+"build_kernel_package_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}":
+  reqs: [["{{kernel_package|shsqe}}", "build_dist_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]]
+
+build_kernel_package:
+  phony: true
+  reqs: ["build_kernel_package_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+
+"build_packages_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}":
+  reqs:
+  - "build_kernel_package_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"
+{%- for depend in (depends or []) %}
+  - ["{{depend|ymlqe}}", "build_dist_{{arch|ymlqe}}"]
+{%- endfor %}
+
+build_packages:
+  phony: true
+  reqs: ["build_packages_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+
+"build_boot_imgclean_{{arch|shsqe}}__{{kernel_platform|ymlqe}}__{{boot_platform|ymlqe}}":
+  reqs: 
+  - "build_boot_package_{{arch|ymlqe}}__{{boot_platform|ymlqe}}"
+  - "build_kernel_package_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"
+  cmd: |
+    rm -f 'dist/{{arch|shsqe}}/boot-{{kernel_platform|shsqe}}-{{boot_platform|shsqe}}.img'
+    rm -f 'dist/{{arch|shsqe}}/boot-{{kernel_platform|shsqe}}-{{boot_platform|shsqe}}.cmd'
+    rm -f 'dist/{{arch|shsqe}}/boot-{{kernel_platform|shsqe}}-{{boot_platform|shsqe}}.scr'
+
+"build_boot_img_{{arch|shsqe}}__{{kernel_platform|ymlqe}}__{{boot_platform|ymlqe}}":
+  reqs: ["build_boot_imgclean_{{arch|shsqe}}__{{kernel_platform|ymlqe}}__{{boot_platform|ymlqe}}"]
+  cmd: |
+    '{{package_collection_dir|shsqe}}/scripts/boot_img.sh' \
+        '{{arch|shsqe}}' \
+        '{{kernel_platform|shsqe}}' \
+        '{{boot_platform|shsqe}}' \
+        '{{kernel_dtb|shsqe}}' \
+        '{{boot_img_size|shsqe}}' \
+        '{{kernel_addr|shsqe}}' \
+        '{{kernel_dtb_addr|shsqe}}'
+
+build_boot_img:
+  phony: true
+  reqs: ["build_boot_img_{{arch|shsqe}}__{{kernel_platform|ymlqe}}__{{boot_platform|ymlqe}}"]
+
+"build_root_dirclean_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}":
+  reqs: ["build_packages_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+  cmd: |
+    rm -fr 'dist/{{arch|shsqe}}/root/{{kernel_platform|shsqe}}'
+
+"build_root_dir_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}":
+  reqs: ["build_root_dirclean_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+  cmd: |
+    '{{package_collection_dir|shsqe}}/scripts/root.sh' \
+        '{{package_collection_dir|shsqe}}' \
+        '{{arch|shsqe}}' \
+        '{{kernel_platform|shsqe}}' \
+        '{{kernel_package|shsqe}}'
+{%- for depend in (depends or []) %} \
+        '{{depend|shsqe}}'
+{%- endfor %}
+
+build_root_dir:
+  phony: true
+  reqs: ["build_root_dir_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+
+"build_root_imgclean_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}":
+  reqs: ["build_root_dir_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+  cmd: |
+    rm -f 'dist/{{arch|shsqe}}/device_table-{{kernel_platform|shsqe}}.txt'
+    rm -f 'dist/{{arch|shsqe}}/root-{{kernel_platform|shsqe}}.img'    
+
+"build_root_img_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}":
+  reqs: ["build_root_imgclean_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+  cmd: |
+    '{{package_collection_dir|shsqe}}/scripts/root_img.sh' \
+        '{{package_collection_dir|shsqe}}' \
+        '{{arch|shsqe}}' \
+        '{{kernel_platform|shsqe}}' \
+        '{{root_img_size|shsqe}}'
+{%- for depend in (depends or []) %} \
+        '{{depend|shsqe}}'
+{%- endfor %}
+
+build_root_img:
+  phony: true
+  reqs: ["build_root_img_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+
+"build_sdcard_imgclean_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}__{{boot_platform|ymlqe}}":
+  reqs:
+  - "build_boot_img_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}__{{boot_platform|ymlqe}}"
+  - "build_root_img_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"
+  - "build_boot_package_{{arch|ymlqe}}__{{boot_platform|ymlqe}}"
+  cmd: |
+    rm -f 'dist/{{arch|shsqe}}/sdcard-{{kernel_platform|shsqe}}-{{boot_platform|shsqe}}.img'
+
+"build_sdcard_img_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}__{{boot_platform|ymlqe}}":
+  reqs: ["build_sdcard_imgclean_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}__{{boot_platform|ymlqe}}"]
+  cmd: |
+    '{{package_collection_dir|shsqe}}/scripts/sdcard_img.sh' \
+        '{{arch|shsqe}}' \
+        '{{kernel_platform|shsqe}}' \
+        '{{boot_platform|shsqe}}'
+
+build_sdcard_img:
+  phony: true
+  reqs: ["build_sdcard_img_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}__{{boot_platform|ymlqe}}"]
+
+build_dist:
+  phony: true
+  reqs: ["build_sdcard_img_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}__{{boot_platform|ymlqe}}"]
+  
+build:
+  phony: true
+  reqs: [build_dist]
+
+clean_boot_package:
+  phony: true
+  reqs: [["{{boot_package|shsqe}}", clean]]
+  unmake: ["build_boot_package_{{arch|ymlqe}}__{{boot_platform|ymlqe}}"]
+
+clean_kernel_package:
+  phony: true
+  reqs: [["{{kernel_package|shsqe}}", clean]]
+  unmake: ["build_kernel_package_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+
+clean_packages:
+  phony: true
+  reqs:
+  - clean_kernel_package
+{%- for depend in (depends or []) %}
+  - ["{{depend|ymlqe}}", clean_dist]
+{%- endfor %}
+  unmake: ["build_packages_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+
+clean_boot_img:
+  phony: true
+  unmake:
+  - "build_boot_imgclean_{{arch|shsqe}}__{{kernel_platform|ymlqe}}__{{boot_platform|ymlqe}}"
+  - "build_boot_img_{{arch|shsqe}}__{{kernel_platform|ymlqe}}__{{boot_platform|ymlqe}}"
+  cmd: |
+    rm -f 'dist/{{arch|shsqe}}/boot-{{kernel_platform|shsqe}}-{{boot_platform|shsqe}}.img'
+    rm -f 'dist/{{arch|shsqe}}/boot-{{kernel_platform|shsqe}}-{{boot_platform|shsqe}}.cmd'
+    rm -f 'dist/{{arch|shsqe}}/boot-{{kernel_platform|shsqe}}-{{boot_platform|shsqe}}.scr'
+
+clean_root_dir:
+  phony: true
+  unmake:
+  - "build_root_dirclean_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"
+  - "build_root_dir_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"
+  cmd: |
+    rm -fr 'dist/{{arch|shsqe}}/root/{{kernel_platform|shsqe}}'
+
+clean_root_img:
+  phony: true
+  unmake:
+  - "build_root_imgclean_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"
+  - "build_root_img_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"
+  cmd: |
+    rm -f 'dist/{{arch|shsqe}}/device_table-{{kernel_platform|shsqe}}.txt'
+    rm -f 'dist/{{arch|shsqe}}/root-{{kernel_platform|shsqe}}.img'
+
+clean_sdcard_img:
+  phony: true
+  unmake:
+  - "build_sdcard_imgclean_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}__{{boot_platform|ymlqe}}"
+  - "build_sdcard_img_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}__{{boot_platform|ymlqe}}"
+  cmd: |
+    rm -f 'dist/{{arch|shsqe}}/sdcard-{{kernel_platform|shsqe}}-{{boot_platform|shsqe}}.img'
+
+clean_dist:
+  phony: true
+  reqs:
+  - clean_boot_package
+  - clean_kernel_package
+  - clean_packages
+  - clean_boot_img
+  - clean_root_dir
+  - clean_root_img
+  - clean_sdcard_img
+  
+clean:
+  phony: true
+  reqs: [clean_dist]
+
+run:
+  phony: true
+  cmd: |
+    '{{qemu_system_arch|shsqe}}' \
+        -M '{{qemu_machine|shsqe}}' \
+        -kernel 'dist/{{arch|shsqe}}/kernel/{{run_kernel_platform|shsqe}}/zImage' \
+        -dtb 'dist/{{arch|shsqe}}/kernel/{{run_kernel_platform|shsqe}}/{{run_kernel_dtb|shsqe}}' \
+        -append 'root=/dev/mmcblk0 rootfstype=ext4 devtmpfs.mount=1 logo.nologo' \
+        -drive 'file=dist/{{arch|shsqe}}/root-{{kernel_platform|shsqe}}.img,if=sd,format=raw' \
+        {{qemu_system_arch_opts}}
+{%- endblock %}

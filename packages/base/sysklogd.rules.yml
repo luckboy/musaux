@@ -1,0 +1,33 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist1_arch -%}
+"build_dist1_{{arch|ymlqe}}":
+  reqs: 
+  - "build_distclean_{{arch|ymlqe}}"
+  - "extract_{{arch|ymlqe}}"
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    sed -i '/Error loading kernel symbols/{n;n;d}' ksym_mod.c
+    sed -i 's/union wait/int/' syslogd.c
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block build_dist2_arch -%}
+"build_dist2_{{arch|ymlqe}}":
+  reqs: ["build_dist1_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    {{gnu_make(["CC=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-gcc"])}} && \
+    mkdir -p "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/sbin' && \
+    cp klogd "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/sbin/klogd'
+    cp syslogd "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/sbin/syslogd'
+    mkdir -p "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/man/man5' && \
+    mkdir -p "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/man/man8' && \
+    cp klogd.8 "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/man/man8/klogd.8' && \
+    cp sysklogd.8 "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/man/man8/sysklogd.8' && \
+    cp syslogd.8 "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/man/man8/syslogd.8' && \
+    cp syslog.conf.5 "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/man/man5/syslog.conf.5' && \
+    cd "$saved_cwd"
+{%- endblock %}

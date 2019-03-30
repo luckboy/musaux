@@ -1,0 +1,16 @@
+name: nvi
+version: '1.81.6'
+url: 'http://harrier.slackbuilds.org/misc'
+ext: tar.bz2
+additional_doc_files: [README.1st, README.DB3]
+depends: [base/glibc, base/ncurses, lib/db]
+enable_shared: true
+enable_static: true
+autoconf_args:
+- '--enable-widechar'
+- '--disable-gtk'
+- '--disable-motif'
+- '--enable-threads'
+- '--without-x'
+- '--with-db=system'
+source_file_sha256: '3441b8e3247b2b6dd19b5fd38355fe6593b2a92e960ecb3dd00d676f63d06b59'

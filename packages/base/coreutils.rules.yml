@@ -1,0 +1,22 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist3_arch -%}
+"build_dist3_{{arch|ymlqe}}":
+  reqs: ["build_dist2_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    mkdir bin && \
+    {
+        for prog in [ cat chgrp chmod chown cp date dd df echo false ln ls mkdir mknod mv pwd rm \
+            rmdir stty sync test true uname; do
+            mv "usr/bin/$prog" "bin/$prog" || exit 1
+        done
+    } && \
+    mkdir usr/sbin && \
+    mv usr/bin/chroot usr/sbin/chroot && \
+    mkdir usr/share/man/man8 && \
+    mv usr/share/man/man1/chroot.1 usr/share/man/man8/chroot.8 && \
+    sed -i 's/CHROOT \"1\"/CHROOT \"8\"/' usr/share/man/man8/chroot.8
+    cd "$saved_cwd"
+{%- endblock %}

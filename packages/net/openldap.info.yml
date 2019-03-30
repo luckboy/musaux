@@ -1,0 +1,31 @@
+name: openldap
+version: 2.4.47
+url: 'ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release'
+ext: tgz
+additional_doc_files: [ANNOUNCEMENT, CHANGES]
+depends: [base/glibc, 'base/util-linux', db/unixODBC, lib/gmp, lib/openssl]
+enable_shared: true
+enable_static: true
+autoconf_args:
+- '--sysconfdir=/etc'
+- '--localstatedir=/var'
+- '--enable-syslog'
+- '--enable-ipv6'
+- '--enable-local'
+- '--enable-crypt'
+- '--enable-modules'
+- '--enable-backends'
+- '--disable-bdb'
+- '--disable-hdb'
+- '--disable-mdb'
+- '--disable-ndb'
+- '--disable-perl'
+- '--enable-overlays=mod'
+- '--without-cyrus-sasl'
+- '--with-threads'
+- '--with-tls=openssl'
+- '--with-yielding-select'
+- '--with-mp=gmp'
+- '--with-odbc=unixodbc'
+fix_ldflags: true
+source_file_sha256: 'f54c5877865233d9ada77c60c0f69b3e0bfd8b1b55889504c650047cc305520b'

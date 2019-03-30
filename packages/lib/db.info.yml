@@ -1,0 +1,17 @@
+name: db
+version: 5.3.28
+url: 'http://download.oracle.com/berkeley-db'
+ext: tar.gz
+depends: [base/glibc]
+enable_shared: true
+enable_static: true
+autoconf_args:
+- '--enable-compat185'
+- '--enable-cxx'
+- '--disable-java'
+- '--disable-jdbc'
+- '--enable-dbm'
+- '--enable-stl'
+- '--disable-tcl'
+fix_libtool: true
+source_file_sha256: 'e0a992d740709892e81f9d93f06daf305cf73fb81b545afe72478043172c3628'

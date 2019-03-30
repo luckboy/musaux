@@ -1,0 +1,7 @@
+name: lz4
+version: 1.8.3
+url: 'https://github.com/lz4/lz4/archive'
+source_file: v1.8.3.tar.gz
+additional_doc_files: [README.md]
+depends: [base/glibc]
+source_file_sha256: '33af5936ac06536805f9745e0b6d61da606a1f8b4cc5c04dd3cbaca3b9b4fc43'

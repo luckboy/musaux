@@ -1,0 +1,7 @@
+#!/bin/sh
+
+echo "Deactivating loopback interface ..."
+ifconfig lo down
+
+echo "Unmounting filesystems ..."
+umount -a -r

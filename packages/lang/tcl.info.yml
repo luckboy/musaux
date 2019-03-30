@@ -1,0 +1,14 @@
+name: tcl
+version: 8.6.9
+url: 'https://sourceforge.net/projects/tcl/files/Tcl/8.6.9'
+source_file: 'tcl8.6.9-src.tar.gz'
+source_dir: tcl8.6.9
+additional_doc_files: [changes, license.terms]
+depends: [base/glibc, base/zlib]
+enable_shared: true
+autoconf_args:
+- '--mandir=/usr/share/man'
+- '--enable-threads'
+- '--enable-64bit'
+- '--with-tzdata'
+source_file_sha256: 'ad0cd2de2c87b9ba8086b43957a0de3eb2eb565c7159d5f53ccbba3feb915f4e'

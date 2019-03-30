@@ -1,0 +1,21 @@
+name: eudev
+version: 3.2.7
+url: 'https://dev.gentoo.org/~blueness/eudev'
+ext: tar.gz
+depends: [base/glibc, base/kmod, 'base/util-linux']
+enable_shared: true
+enable_static: true
+autoconf: true
+autoconf_args:
+- '--bindir=/bin'
+- '--sbindir=/sbin'
+- '--libexecdir=/lib'
+- '--sysconfdir=/etc'
+- '--enable-blkid'
+- '--disable-selinux'
+- '--enable-manpages'
+- '--enable-kmod'
+- '--with-rootprefix='
+- '--with-rootlibdir=/lib'
+fix_ldflags: true
+source_file_sha256: '3004614bd253c1f98558460215027aaf60d7592c70be27fd384ec01db87bf062'

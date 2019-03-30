@@ -1,0 +1,32 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist2_arch -%}
+"build_dist2_{{arch|ymlqe}}":
+  reqs: ["build_dist1_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    ./configure \
+        --cc='{{work_dir|shsqe}}/toolchain/{{arch|shsqe}}/bin/{{target|shsqe}}-gcc' \
+        --ar='{{work_dir|shsqe}}/toolchain/{{arch|shsqe}}/bin/{{target|shsqe}}-ar' \
+{%- if arch == "aarch64" %}
+        --target=aarch64-linux \
+{%- elif arch == "arm" or arch == "armhf" %}
+        --target=arm-linux \
+{%- elif arch == "x86_64" %}
+        --target=x86_64-linux \
+{%- elif arch == "i386" %}
+        --target=i386-linux \
+{%- else %}
+        --target=UNKNOWN-linux \
+{%- endif %}
+        --prefix=/usr \
+        --sysconfdir=/etc \
+        --disable-openssl \
+        --enable-lib-static \
+        --enable-lib-shared && \
+    {{gnu_make()}} && \
+    {{gnu_make(["install", "DESTDIR=" + work_dir + "/dist/" + arch + "/packages/" + package])}} && \
+    {{gnu_make(["-C", "librhash", "install-so-link", "DESTDIR=" + work_dir + "/dist/" + arch + "/packages/" + package])}} && \
+    cd "$saved_cwd"
+{%- endblock %}

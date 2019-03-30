@@ -1,0 +1,13 @@
+diff -Naur Python-2.7.15-orig/setup.py Python-2.7.15/setup.py
+--- Python-2.7.15-orig/setup.py	2018-04-30 00:47:33.000000000 +0200
++++ Python-2.7.15/setup.py	2018-11-06 15:35:50.186321591 +0100
+@@ -497,7 +497,8 @@
+                         add_dir_to_list(dir_list, directory)
+ 
+         if os.path.normpath(sys.prefix) != '/usr' \
+-                and not sysconfig.get_config_var('PYTHONFRAMEWORK'):
++                and not sysconfig.get_config_var('PYTHONFRAMEWORK') \
++                and not "DONT_ADD_INCLUDEDIR_AND_LIBDIR" in os.environ:
+             # OSX note: Don't add LIBDIR and INCLUDEDIR to building a framework
+             # (PYTHONFRAMEWORK is set) to avoid # linking problems when
+             # building a framework with different architectures than

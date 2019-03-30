@@ -1,0 +1,20 @@
+name: 'man-db'
+version: 2.8.5
+url: 'http://download.savannah.nongnu.org/releases/man-db'
+ext: tar.xz
+depends: [base/glibc, base/zlib, lib/gdbm, lib/libpipeline, lib/libseccomp]
+enable_shared: true
+enable_static: true
+autoconf: true
+autoconf_args:
+- '--sysconfdir=/etc'
+- '--localstatedir=/var'
+- '--enable-cache-owner=root'
+- '--disable-setuid'
+- '--enable-mandirs=GNU'
+- '--enable-threads=posix'
+- '--with-db=gdbm'
+- '--with-sections=1 n l 8 3 0 2 5 4 9 6 7'
+- '--without-systemdtmpfilesdir'
+fix_ldflags: true
+source_file_sha256: 'b64d52747534f1fe873b2876eb7f01319985309d5d7da319d2bc52ba1e73f6c1'

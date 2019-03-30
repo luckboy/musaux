@@ -1,0 +1,9 @@
+name: psmisc
+version: '23.2'
+url: 'https://sourceforge.net/projects/psmisc/files/psmisc'
+ext: tar.xz
+additional_doc_files: [README.md]
+depends: [base/glibc, base/ncurses]
+autoconf_args:
+- '--disable-selinux'
+source_file_sha256: '4b7cbffdc9373474da49b85dc3457ae511c43dc7fa7d94513fe06f89dcb87880'

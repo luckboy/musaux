@@ -1,0 +1,32 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist2_arch -%}
+"build_dist2_{{arch|ymlqe}}":
+  reqs: ["build_dist1_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    {{gnu_make()}} && \
+    mkdir -p "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/sbin' && \
+    mkdir -p "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/ca-certificates' && \
+    {{gnu_make(["install", "DESTDIR=" + work_dir + "/dist/" + arch + "/packages/" + package])}} && \
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block build_dist3_arch -%}
+"build_dist3_{{arch|ymlqe}}":
+  reqs: ["build_dist2_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    mkdir -p etc/ssl/certs && \
+    echo -n > etc/ssl/certs/ca-certificates.crt && \
+    {
+        for file in `find usr/share/ca-certificates -name '*.crt'`; do
+            ln -s "../../../$file" "etc/ssl/certs/`basename "$file" .crt`.pem" || exit 1
+            cat "$file" >> etc/ssl/certs/ca-certificates.crt || exit 1
+        done
+    } && \
+    c_rehash etc/ssl/certs && \
+    cd "$saved_cwd"
+{%- endblock %}

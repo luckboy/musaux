@@ -1,0 +1,14 @@
+name: groff
+version: 1.22.4
+url: 'https://ftp.gnu.org/gnu/groff'
+ext: tar.gz
+additional_doc_files: ['BUG-REPORT', FDL, LICENSES, MORE.STUFF, PROJECTS]
+depends: [base/glibc]
+host_autoconf_args:
+- '--without-x'
+- '--with-doc=no'
+autoconf_args:
+- '--docdir=/usr/share/doc/groff'
+- '--without-x'
+- '--with-doc=info'
+source_file_sha256: 'e78e7b4cb7dec310849004fa88847c44701e8d133b5d4c13057d876c1bad0293'

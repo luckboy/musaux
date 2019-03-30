@@ -1,0 +1,11 @@
+name: jsoncpp
+version: 1.8.4
+url: 'https://github.com/open-source-parsers/jsoncpp/archive'
+source_file: 1.8.4.tar.gz
+additional_doc_files: [README.md]
+depends: [base/glibc]
+cmake: true
+cmake_args:
+- '-DBUILD_SHARED_LIBS=ON'
+- '-DJSONCPP_WITH_TESTS=OFF'
+source_file_sha256: 'c49deac9e0933bcb7044f08516861a2d560988540b23de2ac1ad443b219afdb6'

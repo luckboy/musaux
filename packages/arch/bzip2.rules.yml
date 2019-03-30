@@ -1,0 +1,124 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_distclean_arch -%}
+"build_distclean_{{arch|ymlqe}}":
+  reqs:
+  - [toolchain, "build_toolchain_{{arch|ymlqe}}"]
+{%- for depend in (depends or []) %}
+  - ["{{depend|ymlqe}}", "build_dist_{{arch|ymlqe}}"]
+{%- endfor %}
+{%- if not toolchain %}
+  unmake: ["extract_{{arch|ymlqe}}"]
+{%- endif %}
+  cmd: |
+    '{{package_collection_dir|shsqe}}/scripts/sysroot.sh' \
+        '{{arch|shsqe}}' \
+        '{{package|shsqe}}' \
+        rm all
+{%- if toolchain %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-dist'
+{%- else %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}'
+{%- endif %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-libbz2_so'
+    rm -fr 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}'
+    rm -f 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}.suid_files'
+{%- endblock %}
+
+{% block build_dist2_arch -%}
+"build_dist2_{{arch|ymlqe}}":
+  reqs: ["build_dist1_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    mkdir -p 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-libbz2_so' && \
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    cp -r * "$saved_cwd"'/build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-libbz2_so' && \
+    {{make(["libbz2.a", "bzip2recover",
+        "AR=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-ar",
+        "CC=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-gcc",
+        "RANLIB=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-ranlib"])}} && \
+    cd "$saved_cwd" && \
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-libbz2_so'
+    {{make(["-f", "Makefile-libbz2_so",
+        "CC=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-gcc"])}} && \
+    mkdir -p "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/bin' && \
+    mkdir -p "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/include' && \
+    mkdir -p "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/lib' && \
+    mkdir -p "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/man/man1' && \
+    cp 'libbz2.so.{{version|shsqe}}' "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/lib/libbz2.so.{{version|shsqe}}' && \
+    ln -s 'libbz2.so.{{version|shsqe}}' "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/lib/libbz2.so.{{version[0:-2]|shsqe}}' && \
+    ln -s 'libbz2.so.{{version|shsqe}}' "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/lib/libbz2.so.{{version[0:-4]|shsqe}}' && \
+    ln -s 'libbz2.so.{{version|shsqe}}' "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/lib/libbz2.so' && \
+    cp bzip2-shared "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/bin/bzip2' && \
+    {
+        for prog in bunzip2 bzcat; do
+            ln -s bzip2 "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/bin/'"$prog" || exit 1
+        done
+    } && \
+    cd "$saved_cwd" && \
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    cp 'bzlib.h' "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/include/bzlib.h' && \
+    cp 'libbz2.a' "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/lib/libbz2.a' && \
+    cp bzip2recover "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/bin/bzip2recover' && \
+    cp bzdiff "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/bin/bzdiff' && \
+    chmod 755 "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/bin/bzdiff' && \
+    ln -s bzdiff "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/bin/bzcmp' && \
+    cp bzgrep "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/bin/bzgrep' && \
+    chmod 755 "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/bin/bzgrep' && \
+    {
+        for prog in bzegrep bzfgrep; do
+            ln -s bzgrep "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/bin/'"$prog" || exit 1
+        done
+    } && \
+    cp bzmore "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/bin/bzmore' && \
+    chmod 755 "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/bin/bzmore' && \
+    ln -s bzmore "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/bin/bzless' && \
+    cp bzip2.1 "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/man/man1/bzip2.1' && \
+    {
+        for man in bunzip2.1 bzcat.1 bzip2recover.1; do
+            ln -s bzip2.1 "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/man/man1/'"$man" || exit 1
+        done
+    } && \
+    cp bzdiff.1 "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/man/man1/bzdiff.1' && \
+    ln -s bzdiff.1 "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/man/man1/bzcmp.1' && \
+    cp bzgrep.1 "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/man/man1/bzgrep.1' && \
+    {
+        for man in bzegrep.1 bzfgrep.1; do
+            ln -s bzgrep.1 "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/man/man1/'"$man" || exit 1
+        done
+    } && \
+    cp bzmore.1 "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/man/man1/bzmore.1' && \
+    ln -s bzmore.1 "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/man/man1/bzless.1' && \
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block clean_dist -%}
+clean_dist:
+  phony: true
+  unmake:
+{%- if not toolchain %}
+  - "extract_{{arch|ymlqe}}"
+{%- endif %}
+  - "build_distclean_{{arch|ymlqe}}"
+  - "build_dist1_{{arch|ymlqe}}"
+  - "build_dist2_{{arch|ymlqe}}"
+  - "build_dist3_{{arch|ymlqe}}"
+  - "build_dist4_{{arch|ymlqe}}"
+  - "build_dist5_{{arch|ymlqe}}"
+  - "build_dist6_{{arch|ymlqe}}"
+  - "build_dist7_{{arch|ymlqe}}"
+  - "build_dist_{{arch|ymlqe}}"
+  cmd: |
+    '{{package_collection_dir|shsqe}}/scripts/sysroot.sh' \
+        '{{arch|shsqe}}' \
+        '{{package|shsqe}}' \
+        rm all
+{%- if toolchain %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-dist'
+{%- else %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}'
+{%- endif %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-libbz2_so'
+    rm -fr 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}'
+    rm -f 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}.suid_files'
+{%- endblock %}

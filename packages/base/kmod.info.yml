@@ -1,0 +1,14 @@
+name: kmod
+version: '26'
+url: 'https://www.kernel.org/pub/linux/utils/kernel/kmod'
+ext: tar.xz
+depends: [base/glibc, base/zlib]
+enable_shared: true
+autoconf: true
+autoconf_args:
+- '--bindir=/bin'
+- '--sysconfdir=/etc'
+- '--with-rootlibdir=/lib'
+- '--without-xz'
+- '--with-zlib'
+source_file_sha256: '57bb22c8bb56435991f6b0810a042b0a65e2f1e217551efa58235b7034cdbb9d'

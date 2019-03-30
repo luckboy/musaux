@@ -1,0 +1,178 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_distclean_arch -%}
+"build_distclean_{{arch|ymlqe}}":
+  reqs:
+  - [toolchain, "build_toolchain_{{arch|ymlqe}}"]
+{%- for depend in (depends or []) %}
+  - ["{{depend|ymlqe}}", "build_dist_{{arch|ymlqe}}"]
+{%- endfor %}
+{%- if not toolchain %}
+  unmake: ["extract_{{arch|ymlqe}}"]
+{%- endif %}
+  cmd: |
+    if [ -f 'sysroot/{{arch|shsqe}}/usr/include/FlexLexer.h' ]; then
+        mv 'sysroot/{{arch|shsqe}}/usr/include/FlexLexer.h' 'sysroot/{{arch|shsqe}}/usr/include/FlexLexer.h.back'
+    fi
+    '{{package_collection_dir|shsqe}}/scripts/sysroot.sh' \
+        '{{arch|shsqe}}' \
+        '{{package|shsqe}}' \
+        rm all
+    if [ -f 'sysroot/{{arch|shsqe}}/usr/include/FlexLexer.h.back' ]; then
+        mv 'sysroot/{{arch|shsqe}}/usr/include/FlexLexer.h.back' 'sysroot/{{arch|shsqe}}/usr/include/FlexLexer.h'
+    fi
+{%- if toolchain %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-dist'
+{%- else %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}'
+{%- endif %}
+    rm -fr 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}'
+    rm -f 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}.suid_files'
+{%- endblock %}
+
+{% block build_dist2_arch -%}
+"build_dist2_{{arch|ymlqe}}":
+  reqs: ["build_dist1_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    mkdir -p 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-dist' && \
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-dist' && \
+    echo "ac_cv_func_malloc_0_nonnull=yes" > config.cache && \
+    echo "ac_cv_func_realloc_0_nonnull=yes" >> config.cache && \
+    cd "$saved_cwd" && \
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    {{configure_for_autoconf(
+        (autoconf_args or []) + [
+            "--config-cache"
+        ],
+        {
+            "PKG_CONFIG_SYSROOT_DIR": work_dir + "/sysroot/" + arch
+        },
+        prefix = "/usr",
+        host = target,
+        enable_multilib = enable_multilib,
+        disable_multilib = disable_multilib,
+        enable_nls = enable_nls,
+        disable_nls = disable_nls,
+        enable_shared = enable_shared,
+        disable_shared = disable_shared,
+        enable_static = enable_static,
+        disable_static = disable_static,
+        build_dir = (toolchain or None) and (work_dir + "/build/" + arch + "/" + package + "/" + source_dir + "-dist"),
+        toolchain_dir = work_dir + "/toolchain/" + arch,
+        pkg_config = work_dir + "/toolchain/" + arch + "/bin/pkg-config",
+        ldflags = fix_ldflags and rpath_link_ldflags)}} && \
+{%- if fix_libtool %}
+    sed -i 's/^hardcode_libdir_flag_spec=.*/hardcode_libdir_flag_spec=""/' libtool && \
+    sed -i 's/^runpath_var=.*/runpath_var=""/' libtool && \
+{%- endif %}
+    {{make()}} && \
+    {{make(["install", "DESTDIR=" + work_dir + "/dist/" + arch + "/packages/" + package])}} && \
+    {{leave_from_build_dir_for_autoconf()}} && \
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block build_dist3_arch -%}
+"build_dist3_{{arch|ymlqe}}":
+  reqs: ["build_dist2_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    rm -fr usr/share/doc/flex && \
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block build_dist5_arch -%}
+"build_dist5_{{arch|ymlqe}}":
+  reqs: ["build_dist4_{{arch|ymlqe}}"]
+  cmd: |
+    {
+        if [ 'sysroot/{{arch|shsqe}}/usr/include/FlexLexer.h' ]; then
+            mv 'sysroot/{{arch|shsqe}}/usr/include/FlexLexer.h' 'sysroot/{{arch|shsqe}}/usr/include/FlexLexer.h.back'
+        fi
+    }
+{%- endblock %}
+
+{% block build_dist7_arch -%}
+"build_dist7_{{arch|ymlqe}}":
+  reqs: ["build_dist6_{{arch|ymlqe}}"]
+  cmd: |
+    rm -f 'sysroot/{{arch|shsqe}}/usr/include/FlexLexer.h' && \
+    {
+        if [ 'sysroot/{{arch|shsqe}}/usr/include/FlexLexer.h.back' ]; then
+            mv 'sysroot/{{arch|shsqe}}/usr/include/FlexLexer.h.back' 'sysroot/{{arch|shsqe}}/usr/include/FlexLexer.h'
+        fi
+    }
+{%- endblock %}
+
+{% block clean_dist -%}
+clean_dist:
+  phony: true
+  unmake:
+{%- if not toolchain %}
+  - "extract_{{arch|ymlqe}}"
+{%- endif %}
+  - "build_distclean_{{arch|ymlqe}}"
+  - "build_dist1_{{arch|ymlqe}}"
+  - "build_dist2_{{arch|ymlqe}}"
+  - "build_dist3_{{arch|ymlqe}}"
+  - "build_dist4_{{arch|ymlqe}}"
+  - "build_dist5_{{arch|ymlqe}}"
+  - "build_dist6_{{arch|ymlqe}}"
+  - "build_dist7_{{arch|ymlqe}}"
+  - "build_dist_{{arch|ymlqe}}"
+  cmd: |
+    if [ -f 'sysroot/{{arch|shsqe}}/usr/include/FlexLexer.h' ]; then
+        mv 'sysroot/{{arch|shsqe}}/usr/include/FlexLexer.h' 'sysroot/{{arch|shsqe}}/usr/include/FlexLexer.h.back'
+    fi
+    '{{package_collection_dir|shsqe}}/scripts/sysroot.sh' \
+        '{{arch|shsqe}}' \
+        '{{package|shsqe}}' \
+        rm all
+    if [ -f 'sysroot/{{arch|shsqe}}/usr/include/FlexLexer.h.back' ]; then
+        mv 'sysroot/{{arch|shsqe}}/usr/include/FlexLexer.h.back' 'sysroot/{{arch|shsqe}}/usr/include/FlexLexer.h'
+    fi
+{%- if toolchain %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-dist'
+{%- else %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}'
+{%- endif %}
+    rm -fr 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}'
+    rm -f 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}.suid_files'
+{%- endblock %}
+
+{% block build_toolchainclean_arch -%}
+"build_toolchainclean_{{arch|ymlqe}}":
+  cmd: |
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-toolchain'
+    rm -f 'sysroot/{{arch|shsqe}}/usr/include/FlexLexer.h'
+{%- endblock %}
+
+{% block build_toolchain3_arch -%}
+"build_toolchain3_{{arch|ymlqe}}":
+  reqs: ["build_toolchain2_{{arch|ymlqe}}"]
+  cmd: |
+    mkdir -p 'sysroot/{{arch|shsqe}}/usr/include' && \
+    ln -s '{{work_dir|shsqe}}/toolchain/{{arch|shsqe}}/include/FlexLexer.h' 'sysroot/{{arch|shsqe}}/usr/include/FlexLexer.h'
+{%- endblock %}
+
+{% block clean_toolchain -%}
+clean_toolchain:
+  phony: true
+{%- if toolchain_depends and toolchain_depends != [] %}
+  reqs:
+{%- for depend in (toolchain_depends or []) %}
+  - ["{{depend|ymlqe}}", clean_toolchain]
+{%- endfor %}
+{%- endif %}
+  unmake:
+  - "build_toolchainclean_{{arch|ymlqe}}"
+  - "build_toolchain1_{{arch|ymlqe}}"
+  - "build_toolchain2_{{arch|ymlqe}}"
+  - "build_toolchain3_{{arch|ymlqe}}"
+  - "build_toolchain_{{arch|ymlqe}}"
+  cmd: |
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-toolchain'
+    rm -f 'sysroot/{{arch|shsqe}}/usr/include/FlexLexer.h'
+{%- endblock %}
+

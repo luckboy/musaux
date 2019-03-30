@@ -1,0 +1,48 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist3_arch -%}
+"build_dist3_{{arch|ymlqe}}":
+  reqs: ["build_dist2_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    rm -f usr/share/doc/mpfr/[A-Z]* && \
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block build_dist5_arch -%}
+"build_dist5_{{arch|ymlqe}}":
+  reqs: ["build_dist4_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}/doc' && \
+    gzip -9c FAQ.html > "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/doc/mpfr/FAQ.html.gz' && \
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block build_toolchain2_arch -%}
+"build_toolchain2_{{arch|ymlqe}}":
+  reqs: ["build_toolchain1_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    {{configure_for_autoconf(
+        (toolchain_autoconf_args or []) + [
+            "--with-gmp=" + work_dir + "/toolchain/" + arch
+        ],
+        prefix = work_dir + "/toolchain/" + arch,
+        target = (toolchain_target_opt or None) and target,
+        enable_multilib = toolchain_enable_multilib,
+        disable_multilib = toolchain_disable_multilib,
+        enable_nls = toolchain_enable_nls,
+        disable_nls = toolchain_disable_nls,
+        enable_shared = toolchain_enable_shared,
+        disable_shared = toolchain_disable_shared,
+        enable_static = toolchain_enable_static,
+        disable_static = toolchain_disable_static,
+        build_dir = work_dir + "/build/" + arch + "/" + package + "/" + source_dir + "-toolchain")}} && \
+    {{make()}} && \
+    {{make(["install"])}} && \
+    {{leave_from_build_dir_for_autoconf()}} && \
+    cd "$saved_cwd"
+{%- endblock %}

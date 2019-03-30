@@ -1,0 +1,43 @@
+name: cmake
+version: 3.12.0
+url: 'https://cmake.org/files/v3.12'
+ext: tar.gz
+doc_files: [CONTRIBUTING.rst, README.rst]
+depends:
+- arch/bzip2
+- arch/xz
+- base/glibc
+- base/ncurses
+- base/zlib
+- lib/expat
+- lib/jsoncpp
+- lib/libarchive
+- lib/libuv
+- net/curl
+- util/rhash
+cmake: true
+cmake_args:
+- '-DBUILD_CursesDialog=ON'
+- '-DBUILD_QtDialog=OFF'
+- '-DBUILD_TESTING=OFF'
+- '-DCMAKE_DOC_DIR=share/doc/cmake'
+- '-DCMAKE_MAN_DIR=share/man'
+- '-DCMAKE_USE_SYSTEM_BZIP2=ON'
+- '-DCMAKE_USE_SYSTEM_CURL=ON'
+- '-DCMAKE_USE_SYSTEM_EXPAT=ON'
+- '-DCMAKE_USE_SYSTEM_FORM=ON'
+- '-DCMAKE_USE_SYSTEM_JSONCPP=ON'
+- '-DCMAKE_USE_SYSTEM_LIBARCHIVE=ON'
+- '-DCMAKE_USE_SYSTEM_LIBLZMA=ON'
+- '-DCMAKE_USE_SYSTEM_LIBRHASH=ON'
+- '-DCMAKE_USE_SYSTEM_LIBUV=ON'
+- '-DCMAKE_USE_SYSTEM_ZLIB=ON'
+- '-DSPHINX_HTML=ON'
+- '-DSPHINX_INFO=ON'
+- '-DSPHINX_MAN=ON'
+- '-DSPHINX_QTHELP=OFF'
+- '-DSPHINX_SINGLEHTML=ON'
+- '-DKWSYS_LFS_WORKS=ON'
+fix_ldflags: true
+toolchain: true
+source_file_sha256: 'd0781a90f6cdb9049d104ac16a150f9350b693498b9dea8a0331e799db6b9d69'

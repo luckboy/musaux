@@ -1,0 +1,13 @@
+name: mpc
+version: 1.1.0
+url: 'https://ftp.gnu.org/gnu/mpc'
+ext: tar.gz
+additional_doc_files: [COPYING.LESSER]
+depends: [base/glibc, lib/gmp, lib/mpfr]
+enable_shared: true
+enable_static: true
+toolchain: true
+toolchain_depends: [lib/gmp, lib/mpfr]
+toolchain_disable_shared: true
+toolchain_enable_static: true
+source_file_sha256: '6985c538143c1208dcb1ac42cedad6ff52e267b47e5f970183a3e75125b43c2e'

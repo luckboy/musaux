@@ -1,0 +1,2 @@
+name: toolchain
+depends: [dev/bison, dev/cmake, dev/flex, dev/gcc, 'dev/pkg-config']

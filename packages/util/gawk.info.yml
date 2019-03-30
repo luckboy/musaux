@@ -1,0 +1,11 @@
+name: gawk
+version: 4.2.1
+url: 'https://ftp.gnu.org/gnu/gawk'
+ext: tar.xz
+additional_doc_files: [POSIX.STD]
+depends: [base/glibc, base/readline, lib/mpfr]
+autoconf: true
+autoconf_args:
+- '--sysconfdir=/etc'
+- '--without-libsigsegv-prefix'
+source_file_sha256: 'd1119785e746d46a8209d28b2de404a57f983aa48670f4e225531d3bdc175551'

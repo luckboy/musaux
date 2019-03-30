@@ -1,0 +1,9 @@
+name: libunistring
+version: 0.9.10
+url: 'http://ftp.gnu.org/gnu/libunistring'
+ext: tar.xz
+additional_doc_files: [COPYING.LIB, DEPENDENCIES, HACKING]
+depends: [base/glibc]
+enable_shared: true
+enable_static: true
+source_file_sha256: 'eb8fb2c3e4b6e2d336608377050892b54c3c983b646c561836550863003c05d7'

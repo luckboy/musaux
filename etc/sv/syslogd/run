@@ -1,0 +1,4 @@
+#!/bin/sh
+. /etc/default/syslogd
+umask "$UMASK"
+exec syslogd -n $OPTS

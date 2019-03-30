@@ -1,0 +1,11 @@
+export PATH=/bin:/sbin:/usr/bin:/usr/games:/usr/sbin:/usr/local/bin:/usr/local/games:/usr/local/sbin
+
+if [ -n "$BASH" -a "$BASH" != "/bin/sh" ]; then
+    PS1='\u@\h:\w\$ '
+else
+    if [ "`id -u`" -eq 0 ]; then
+        PS1='# '
+    else
+        PS1='$ '
+    fi
+fi

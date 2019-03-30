@@ -1,0 +1,9 @@
+name: acl
+version: 2.2.53
+url: 'http://download.savannah.nongnu.org/releases/acl'
+ext: tar.gz
+doc_files: [README]
+depends: [base/attr, base/glibc]
+enable_shared: true
+enable_static: true
+source_file_sha256: '06be9865c6f418d851ff4494e12406568353b891ffe1f596b34693c387af26c7'

@@ -1,0 +1,98 @@
+diff -Naur binutils-2.31.1-orig/binutils/Makefile.am binutils-2.31.1/binutils/Makefile.am
+--- binutils-2.31.1-orig/binutils/Makefile.am	2018-06-24 20:38:57.000000000 +0200
++++ binutils-2.31.1/binutils/Makefile.am	2018-08-21 08:26:46.309575268 +0200
+@@ -267,11 +267,11 @@
+ ar_SOURCES = arparse.y arlex.l ar.c not-ranlib.c arsup.c rename.c binemul.c \
+ 	emul_$(EMULATION).c $(BULIBS)
+ EXTRA_ar_SOURCES = $(CFILES)
+-ar_LDADD = $(BFDLIB) $(LIBIBERTY) $(LEXLIB) $(LIBINTL)
++ar_LDADD = $(BFDLIB) $(LIBIBERTY) $(LIBINTL)
+ 
+ ranlib_SOURCES = ar.c is-ranlib.c arparse.y arlex.l arsup.c rename.c \
+ 	binemul.c emul_$(EMULATION).c $(BULIBS)
+-ranlib_LDADD = $(BFDLIB) $(LIBIBERTY) $(LEXLIB) $(LIBINTL)
++ranlib_LDADD = $(BFDLIB) $(LIBIBERTY) $(LIBINTL)
+ 
+ addr2line_SOURCES = addr2line.c $(BULIBS)
+ 
+@@ -438,7 +438,7 @@
+ srconv.@OBJEXT@: sysroff.c
+ 
+ dlltool_SOURCES = dlltool.c defparse.y deflex.l $(BULIBS)
+-dlltool_LDADD = $(BFDLIB) $(LIBIBERTY) $(LEXLIB) $(LIBINTL)
++dlltool_LDADD = $(BFDLIB) $(LIBIBERTY) $(LIBINTL)
+ 
+ dlltool.@OBJEXT@:
+ if am__fastdepCC
+@@ -471,11 +471,11 @@
+ 
+ windres_SOURCES = windres.c resrc.c rescoff.c resbin.c rcparse.y rclex.c \
+ 	winduni.c resres.c $(BULIBS)
+-windres_LDADD = $(BFDLIB) $(LIBIBERTY) $(LEXLIB) $(LIBINTL) $(LIBICONV)
++windres_LDADD = $(BFDLIB) $(LIBIBERTY) $(LIBINTL) $(LIBICONV)
+ 
+ windmc_SOURCES = windmc.c mcparse.y mclex.c \
+ 	winduni.c $(BULIBS)
+-windmc_LDADD = $(BFDLIB) $(LIBIBERTY) $(LEXLIB) $(LIBINTL) $(LIBICONV)
++windmc_LDADD = $(BFDLIB) $(LIBIBERTY) $(LIBINTL) $(LIBICONV)
+ 
+ dllwrap_SOURCES = dllwrap.c version.c
+ dllwrap_LDADD = $(LIBIBERTY) $(LIBINTL)
+diff -Naur binutils-2.31.1-orig/binutils/Makefile.in binutils-2.31.1/binutils/Makefile.in
+--- binutils-2.31.1-orig/binutils/Makefile.in	2018-07-18 09:46:05.000000000 +0200
++++ binutils-2.31.1/binutils/Makefile.in	2018-08-21 08:28:00.541805253 +0200
+@@ -709,25 +709,25 @@
+ 	emul_$(EMULATION).c $(BULIBS)
+ 
+ EXTRA_ar_SOURCES = $(CFILES)
+-ar_LDADD = $(BFDLIB) $(LIBIBERTY) $(LEXLIB) $(LIBINTL)
++ar_LDADD = $(BFDLIB) $(LIBIBERTY) $(LIBINTL)
+ ranlib_SOURCES = ar.c is-ranlib.c arparse.y arlex.l arsup.c rename.c \
+ 	binemul.c emul_$(EMULATION).c $(BULIBS)
+ 
+-ranlib_LDADD = $(BFDLIB) $(LIBIBERTY) $(LEXLIB) $(LIBINTL)
++ranlib_LDADD = $(BFDLIB) $(LIBIBERTY) $(LIBINTL)
+ addr2line_SOURCES = addr2line.c $(BULIBS)
+ srconv_SOURCES = srconv.c coffgrok.c $(BULIBS)
+ dlltool_SOURCES = dlltool.c defparse.y deflex.l $(BULIBS)
+-dlltool_LDADD = $(BFDLIB) $(LIBIBERTY) $(LEXLIB) $(LIBINTL)
++dlltool_LDADD = $(BFDLIB) $(LIBIBERTY) $(LIBINTL)
+ coffdump_SOURCES = coffdump.c coffgrok.c $(BULIBS)
+ sysdump_SOURCES = sysdump.c $(BULIBS)
+ windres_SOURCES = windres.c resrc.c rescoff.c resbin.c rcparse.y rclex.c \
+ 	winduni.c resres.c $(BULIBS)
+ 
+-windres_LDADD = $(BFDLIB) $(LIBIBERTY) $(LEXLIB) $(LIBINTL) $(LIBICONV)
++windres_LDADD = $(BFDLIB) $(LIBIBERTY) $(LIBINTL) $(LIBICONV)
+ windmc_SOURCES = windmc.c mcparse.y mclex.c \
+ 	winduni.c $(BULIBS)
+ 
+-windmc_LDADD = $(BFDLIB) $(LIBIBERTY) $(LEXLIB) $(LIBINTL) $(LIBICONV)
++windmc_LDADD = $(BFDLIB) $(LIBIBERTY) $(LIBINTL) $(LIBICONV)
+ dllwrap_SOURCES = dllwrap.c version.c
+ dllwrap_LDADD = $(LIBIBERTY) $(LIBINTL)
+ EXTRA_DIST = arparse.c arparse.h arlex.c sysinfo.c sysinfo.h \
+diff -Naur binutils-2.31.1-orig/gas/Makefile.am binutils-2.31.1/gas/Makefile.am
+--- binutils-2.31.1-orig/gas/Makefile.am	2018-06-25 12:25:26.000000000 +0200
++++ binutils-2.31.1/gas/Makefile.am	2018-08-21 08:52:25.015905647 +0200
+@@ -546,7 +546,7 @@
+ 
+ EXTRA_PROGRAMS = itbl-test
+ itbl_test_SOURCES = itbl-parse.y itbl-lex.l
+-itbl_test_LDADD = itbl-tops.@OBJEXT@ itbl-test.@OBJEXT@ $(GASLIBS) @LEXLIB@
++itbl_test_LDADD = itbl-tops.@OBJEXT@ itbl-test.@OBJEXT@ $(GASLIBS)
+ 
+ itbl-tops.@OBJEXT@: itbl-ops.c itbl-parse.h
+ if am__fastdepCC
+diff -Naur binutils-2.31.1-orig/gas/Makefile.in binutils-2.31.1/gas/Makefile.in
+--- binutils-2.31.1-orig/gas/Makefile.in	2018-07-18 09:41:46.000000000 +0200
++++ binutils-2.31.1/gas/Makefile.in	2018-08-21 08:25:02.385252699 +0200
+@@ -789,7 +789,7 @@
+ RUNTEST = runtest
+ RUNTESTFLAGS = 
+ itbl_test_SOURCES = itbl-parse.y itbl-lex.l
+-itbl_test_LDADD = itbl-tops.@OBJEXT@ itbl-test.@OBJEXT@ $(GASLIBS) @LEXLIB@
++itbl_test_LDADD = itbl-tops.@OBJEXT@ itbl-test.@OBJEXT@ $(GASLIBS)
+ 
+ # CGEN interface.
+ CGEN_CPU_PREFIX = @cgen_cpu_prefix@

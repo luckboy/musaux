@@ -1,0 +1,12 @@
+name: glibc
+version: '2.28'
+url: 'https://ftp.gnu.org/gnu/glibc'
+ext: tar.xz
+doc_files: [CONFORMANCE, COPYING, COPYING.LIB, ChangeLog, LICENSES, NEWS, README]
+depends: ['base/linux-headers']
+enable_shared: true
+enable_static: true
+autoconf_args:
+- '--enable-obsolute-rpc'
+- '--disable-werror'
+source_file_sha256: 'b1900051afad76f7a4f73e71413df4826dce085ef8ddb785a945b66d7d513082'

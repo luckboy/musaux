@@ -1,0 +1,29 @@
+name: Python
+version: 2.7.16
+url: 'https://www.python.org/ftp/python/2.7.16'
+ext: tar.xz
+depends:
+- arch/bzip2
+- base/glibc
+- base/ncurses
+- base/readline
+- base/zlib
+- db/sqlite
+- lib/db
+- lib/expat
+- lib/libffi
+- lib/openssl
+enable_shared: true
+host_autoconf_args:
+- '--enable-unicode=ucs4'
+- '--without-ensurepip'
+autoconf_args:
+- '--enable-ipv6'
+- '--enable-unicode=ucs4'
+- '--with-system-expat'
+- '--with-system-ffi'
+- '--with-dbmliborder=bdb'
+- '--with-threads'
+- '--without-ensurepip'
+fix_ldflags: true
+source_file_sha256: 'f222ef602647eecb6853681156d32de4450a2c39f4de93bd5b20235f2e660ed7'

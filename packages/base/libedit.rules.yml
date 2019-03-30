@@ -1,0 +1,18 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist3_arch -%}
+"build_dist3_{{arch|ymlqe}}":
+  reqs: ["build_dist2_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    mkdir lib && \
+    {
+        for file in usr/lib/libedit.so.*; do
+            mv "$file" "lib/`basename "$file"`" || exit 1
+        done
+    } && \
+    ln -sf "../../lib/`readlink usr/lib/libedit.so`" usr/lib/libedit.so && \
+    rm -f usr/share/man/man3/history.3 && \
+    cd "$saved_cwd"
+{%- endblock %}

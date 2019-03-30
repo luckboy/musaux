@@ -1,0 +1,11 @@
+name: make
+version: 4.2.1
+url: 'https://ftp.gnu.org/gnu/make'
+ext: tar.bz2
+additional_doc_files: [README.Amiga, README.DOS, README.OS2, README.VMS, README.W32, README.customs]
+depends: [base/glibc]
+autoconf: true
+autoconf_args:
+- '--without-guile'
+- '--without-dmalloc'
+source_file_sha256: 'd6e262bf3601b42d2b1e4ef8310029e1dcf20083c5446b4b7aa67081fdffc589'

@@ -1,0 +1,10 @@
+name: tar
+version: '1.32'
+url: 'https://ftp.gnu.org/gnu/tar'
+ext: tar.xz
+depends: [base/acl, base/attr, base/glibc]
+autoconf: true
+autoconf_args:
+- '--bindir=/bin'
+- '--without-selinux'
+source_file_sha256: 'd0d3ae07f103323be809bc3eac0dcc386d52c5262499fe05511ac4788af1fdd8'

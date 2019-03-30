@@ -1,0 +1,13 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist1_arch -%}
+"build_dist1_{{arch|ymlqe}}":
+  reqs: 
+  - "build_distclean_{{arch|ymlqe}}"
+  - "extract_{{arch|ymlqe}}"
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    sed -i '211,217 d; 219,229 d; 232 d' glob/glob.c && \
+    cd "$saved_cwd"
+{%- endblock %}

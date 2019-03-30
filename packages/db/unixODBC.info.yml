@@ -1,0 +1,22 @@
+name: unixODBC
+version: 2.3.7
+url: 'ftp://ftp.unixodbc.org/pub/unixODBC'
+ext: tar.gz
+additional_doc_files:
+- README.AIX
+- README.CYGWIN
+- README.INTERIX
+- README.OSX
+- README.QNX
+- README.SOLARIS
+- README.VMS
+depends: [base/glibc, dev/libtool]
+enable_static: true
+autoconf: true
+autoconf_args:
+- '--sysconfdir=/etc'
+- '--disable-readline'
+- '--without-included-ltdl'
+- '--without-pth'
+fix_ldflags: true
+source_file_sha256: '45f169ba1f454a72b8fcbb82abd832630a3bf93baa84731cf2949f449e1e3e77'

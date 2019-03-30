@@ -1,0 +1,12 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist5_arch -%}
+"build_dist5_{{arch|ymlqe}}":
+  reqs: ["build_dist4_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}/libltdl' && \
+    mkdir -p "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/doc/{{name|shsqe}}' || exit 1
+    gzip -9c COPYING.LIB > "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/doc/{{name|shsqe}}/COPYING.LIB.gz' || exit 1
+    cd "$saved_cwd"
+{%- endblock %}

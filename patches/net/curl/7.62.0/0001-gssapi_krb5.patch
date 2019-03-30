@@ -1,0 +1,21 @@
+diff -Naur curl-7.62.0-orig/configure curl-7.62.0/configure
+--- curl-7.62.0-orig/configure	2018-10-30 11:03:34.000000000 +0100
++++ curl-7.62.0/configure	2018-11-14 14:24:49.219441288 +0100
+@@ -22166,7 +22166,7 @@
+               gss_libname="gss"
+               ;;
+            *)
+-              gss_libname="gssapi"
++              gss_libname="gssapi_krb5"
+               ;;
+            esac
+ 
+@@ -22186,7 +22186,7 @@
+         LIBS="-lgss $LIBS"
+         ;;
+      *)
+-        LIBS="-lgssapi $LIBS"
++        LIBS="-lgssapi_krb5 $LIBS"
+         ;;
+      esac
+   fi

@@ -1,0 +1,14 @@
+name: 'procps-ng'
+version: 3.3.15
+url: 'https://sourceforge.net/projects/procps-ng/files/Production'
+ext: tar.xz
+additional_doc_files: [COPYING.LIB]
+depends: [base/glibc, base/ncurses]
+enable_shared: true
+enable_static: true
+autoconf_args:
+- '--disable-libselinux'
+- '--disable-kill'
+- '--without-systemd'
+- '--without-elogind'
+source_file_sha256: '10bd744ffcb3de2d591d2f6acf1a54a7ba070fdcc432a855931a5057149f0465'

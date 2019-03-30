@@ -1,0 +1,14 @@
+name: libelf
+version: '0.176'
+source_name: elfutils
+url: 'https://sourceware.org/elfutils/ftp/0.176'
+ext: tar.bz2
+additional_doc_files: [CONTRIBUTING, 'COPYING-GPLV2', 'COPYING-LGPLV3']
+depends: [base/glibc, base/zlib]
+autoconf_args:
+- '--with-zlib'
+- '--without-bzlib'
+- '--without-lzma'
+- '--without-biarch'
+fix_ldflags: true
+source_file_sha256: 'eb5747c371b0af0f71e86215a5ebb88728533c3a104a43d4231963f308cd1023'

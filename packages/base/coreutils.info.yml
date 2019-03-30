@@ -1,0 +1,15 @@
+name: coreutils
+version: '8.30'
+url: 'https://ftp.gnu.org/gnu/coreutils'
+ext: tar.xz
+depends: [base/acl, base/attr, base/glibc, base/libcap]
+autoconf: true
+autoconf_args:
+- '--disable-libsmack'
+- '--enable-install-program=arch'
+- '--enable-no-install-program=coreutils,hostname,kill,uptime'
+- '--without-linux-crypto'
+- '--without-openssl'
+- '--without-selinux'
+- '--without-gmp'
+source_file_sha256: 'e831b3a86091496cdba720411f9748de81507798f6130adeaef872d206e1b057'

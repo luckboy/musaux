@@ -1,0 +1,10 @@
+name: file
+version: '5.36'
+url: 'ftp://ftp.astron.com/pub/file'
+ext: tar.gz
+depends: [base/glibc, base/zlib]
+enable_shared: true
+enable_static: true
+autoconf_args:
+- '--disable-libseccomp'
+source_file_sha256: 'fb608290c0fd2405a8f63e5717abf6d03e22e183fb21884413d1edd918184379'

@@ -1,0 +1,30 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist3_arch -%}
+"build_dist3_{{arch|ymlqe}}":
+  reqs: ["build_dist2_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    mkdir bin && \
+    mv usr/bin/bash bin/bash && \
+    mkdir usr/lib && \
+    mv lib/pkgconfig usr/lib/pkgconfig && \
+    rm -fr usr/share/doc/bash && \
+    sed -i 's/[^ ]*\/toolchain\/[^ \/]*\/bin\///g' usr/lib/pkgconfig/bash.pc && \
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block build_dist5_arch -%}
+"build_dist5_{{arch|ymlqe}}":
+  reqs: ["build_dist4_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}/doc' && \
+    {
+        for file in FAQ INTRO bash.html bashref.html; do
+            gzip -9c "$file" > "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/doc/bash/'"$file.gz" || exit 1
+        done
+    } && \
+    cd "$saved_cwd"
+{%- endblock %}

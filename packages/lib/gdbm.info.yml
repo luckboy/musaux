@@ -1,0 +1,11 @@
+name: gdbm
+version: 1.18.1
+url: 'ftp://ftp.gnu.org/gnu/gdbm'
+ext: tar.gz
+depends: [base/glibc, base/readline]
+enable_shared: true
+enable_static: true
+autoconf: true
+autoconf_args:
+- '--enable-libgdbm-compat'
+source_file_sha256: '86e613527e5dba544e73208f42b78b7c022d4fa5a6d5498bf18c8d6f745b91dc'

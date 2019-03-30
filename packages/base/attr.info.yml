@@ -1,0 +1,12 @@
+name: attr
+version: 2.4.48 
+url: 'http://download.savannah.nongnu.org/releases/attr'
+ext: tar.gz
+doc_files: [README]
+depends: [base/glibc]
+enable_shared: true
+enable_static: true
+autoconf: true
+autoconf_args:
+- '--sysconfdir=/etc'
+source_file_sha256: '5ead72b358ec709ed00bbf7a9eaef1654baad937c001c044fe8b74c57f5324e7'

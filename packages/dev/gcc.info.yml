@@ -1,0 +1,33 @@
+name: gcc
+version: 7.4.0
+url: 'https://ftp.gnu.org/gnu/gcc/gcc-7.4.0'
+ext: tar.xz
+additional_doc_files: [COPYING.LIB, COPYING.RUNTIME, COPYING3, COPYING3.LIB, MAINTAINERS]
+depends: [base/glibc, base/zlib, lib/gmp, lib/isl, lib/mpc, lib/mpfr]
+disable_multilib: true
+enable_shared: true
+enable_static: true
+autoconf_args:
+- '--enable-threads=posix'
+- '--enable-languages=c,c++'
+- '--with-system-zlib'
+toolchain: true
+toolchain_depends: [dev/binutils, lib/gmp, lib/isl, lib/mpc, lib/mpfr]
+toolchain_target_opt: true
+toolchain_disable_multilib: true
+toolchain_disable_nls: true
+toolchain_enable_shared: true
+toolchain_enable_static: true
+toolchain_autoconf_args:
+- '--enable-threads=posix'
+- '--enable-languages=c,c++'
+- '--with-system-zlib'
+bootstrap_disable_multilib: true
+bootstrap_disable_nls: true
+bootstrap_disable_shared: true
+bootstrap_enable_static: true
+bootstrap_autoconf_args:
+- '--disable-threads'
+- '--enable-languages=c'
+- '--with-system-zlib'
+source_file_sha256: 'eddde28d04f334aec1604456e536416549e9b1aa137fc69204e65eb0c009fe51'

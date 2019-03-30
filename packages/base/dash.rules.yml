@@ -1,0 +1,12 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist3_arch -%}
+"build_dist3_{{arch|ymlqe}}":
+  reqs: ["build_dist2_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    ln -s dash bin/sh && \
+    ln -s dash.1 usr/share/man/man1/sh.1 && \
+    cd "$saved_cwd"
+{%- endblock %}

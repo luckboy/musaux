@@ -1,0 +1,10 @@
+name: sed
+version: '4.7'
+url: 'https://ftp.gnu.org/gnu/sed'
+ext: tar.xz
+depends: [base/acl, base/glibc]
+autoconf: true
+autoconf_args:
+- '--bindir=/bin'
+- '--without-selinux'
+source_file_sha256: '2885768cd0a29ff8d58a6280a270ff161f6a3deb5690b2be6c49f46d4c67bd6a'

@@ -1,0 +1,6 @@
+name: automake
+version: 1.16.1
+url: 'https://ftp.gnu.org/gnu/automake'
+ext: tar.xz
+additional_doc_files: [HACKING]
+source_file_sha256: '5d05bb38a23fd3312b10aea93840feec685bdf4a41146e78882848165d3ae921'

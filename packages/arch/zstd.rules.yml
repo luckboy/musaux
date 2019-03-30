@@ -1,0 +1,23 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist2_arch -%}
+"build_dist2_{{arch|ymlqe}}":
+  reqs: ["build_dist1_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    {{gnu_make(["-C", "lib",
+        "prefix=/usr",
+        "AR=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-ar",
+        "CC=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-gcc"])}} && \
+    {{gnu_make(["-C", "programs",
+        "prefix=/usr",
+        "AR=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-ar",
+        "CC=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-gcc",
+        "LDFLAGS=" + rpath_link_ldflags + " -llz4 -llzma -lz -lpthread"])}} && \
+    {{gnu_make(["install", "DESTDIR=" + work_dir + "/dist/" + arch + "/packages/" + package,
+        "prefix=/usr",
+        "AR=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-ar",
+        "CC=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-gcc"])}} && \
+    cd "$saved_cwd"
+{%- endblock %}

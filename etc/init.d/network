@@ -1,0 +1,21 @@
+#!/bin/sh
+
+if [ ! -e /service/dhclient ]; then
+    . /etc/default/network
+    case "$1" in
+    start)
+        echo "Starting network ..."
+        ifconfig "$INTERFACE" "$ADDRESS" netmask "$NETMASK" up
+        route add default gw "$GATEWAY"
+        echo -n > /etc/resolv.conf
+        [ -f /etc/resolv.conf.static ] && cat /etc/resolv.conf.static >> /etc/resolv.conf
+        [ -f /etc/resolv.conf.tail ] && cat /etc/resolv.conf.tail >> /etc/resolv.conf
+        ;;
+    stop)
+        echo "Stopping network ..."
+        echo -n > /etc/resolv.conf
+        route del default gw "$GATEWAY"
+        ifconfig "$INTERFACE" down
+        ;;
+    esac
+fi

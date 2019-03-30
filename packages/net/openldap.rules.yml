@@ -1,0 +1,51 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist2_arch -%}
+"build_dist2_{{arch|ymlqe}}":
+  reqs: ["build_dist1_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    echo "ac_cv_header_unicode_utypes_h=no" > config.cache && \
+    echo "ol_cv_lib_icu=no" >> config.cache && \
+    {{configure_for_autoconf(
+        (autoconf_args or []) + [
+            "--config-cache"
+        ],
+        {
+            "PKG_CONFIG_SYSROOT_DIR": work_dir + "/sysroot/" + arch
+        },
+        prefix = "/usr",
+        host = target,
+        enable_multilib = enable_multilib,
+        disable_multilib = disable_multilib,
+        enable_nls = enable_nls,
+        disable_nls = disable_nls,
+        enable_shared = enable_shared,
+        disable_shared = disable_shared,
+        enable_static = enable_static,
+        disable_static = disable_static,
+        build_dir = (toolchain or None) and (work_dir + "/build/" + arch + "/" + package + "/" + source_dir + "-dist"),
+        toolchain_dir = work_dir + "/toolchain/" + arch,
+        pkg_config = work_dir + "/toolchain/" + arch + "/bin/pkg-config",
+        ldflags = fix_ldflags and rpath_link_ldflags)}} && \
+{%- if fix_libtool %}
+    sed -i 's/^hardcode_libdir_flag_spec=.*/hardcode_libdir_flag_spec=""/' libtool && \
+    sed -i 's/^runpath_var=.*/runpath_var=""/' libtool && \
+{%- endif %}
+    sed -i 's/#define NEED_MEMCMP_REPLACEMENT 1/\/* #undef NEED_MEMCMP_REPLACEMENT *\//' include/portable.h
+    {{make()}} && \
+    {{make(["install", "DESTDIR=" + work_dir + "/dist/" + arch + "/packages/" + package, "STRIP="])}} && \
+    {{leave_from_build_dir_for_autoconf()}} && \
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block build_dist3_arch -%}
+"build_dist3_{{arch|ymlqe}}":
+  reqs: ["build_dist2_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    rm -fr var/run && \
+    cd "$saved_cwd"
+{%- endblock %}

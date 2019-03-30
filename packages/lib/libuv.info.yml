@@ -1,0 +1,9 @@
+name: libuv
+version: 1.26.0
+url: 'https://github.com/libuv/libuv/archive'
+source_file: v1.26.0.tar.gz
+additional_doc_files: [CONTRIBUTING.md, MAINTAINERS.md, README.md]
+depends: [base/glibc]
+enable_shared: true
+enable_static: true
+source_file_sha256: 'e414cf74615b7dae768f0f5667092f1d4975f5067c087bcbe0641e241ebe4693'

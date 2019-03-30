@@ -1,0 +1,26 @@
+name: dbus
+version: 1.12.12
+url: 'https://dbus.freedesktop.org/releases/dbus'
+ext: tar.gz
+additional_doc_files: [HACKING]
+depends: [base/glibc, lib/expat]
+enable_shared: true
+enable_static: true
+autoconf: true
+autoconf_args:
+- '--sysconfdir=/etc'
+- '--localstatedir=/var'
+- '--enable-xml-docs'
+- '--disable-doxygen-docs'
+- '--disable-ducktype-docs'
+- '--disable-selinux'
+- '--disable-apparmor'
+- '--disable-libaudit'
+- '--disable-launchd'
+- '--disable-systemd'
+- '--disable-tests'
+- '--with-dbus-user=dbus'
+- '--without-valgrind'
+- '--without-x'
+fix_ldflags: true
+source_file_sha256: '9546f226011a1e5d9d77245fe5549ef25af4694053189d624d0d6ac127ecf5f8'

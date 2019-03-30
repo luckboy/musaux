@@ -1,0 +1,11 @@
+name: less
+version: '530'
+url: 'http://www.greenwoodsoftware.com/less'
+ext: tar.gz
+depends: [base/glibc, base/ncurses]
+autoconf: true
+autoconf_args:
+- '--sysconfdir=/etc'
+- '--with-secure'
+- '--with-regex=gnu'
+source_file_sha256: '503f91ab0af4846f34f0444ab71c4b286123f0044a4964f1ae781486c617f2e2'

@@ -1,0 +1,9 @@
+name: gzip
+version: '1.10'
+url: 'https://ftp.gnu.org/gnu/gzip'
+ext: tar.xz
+depends: [base/glibc]
+autoconf: true
+autoconf_args:
+- '--bindir=/bin'
+source_file_sha256: '8425ccac99872d544d4310305f915f5ea81e04d0f437ef1a230dc9d1c819d7c0'

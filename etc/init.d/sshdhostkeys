@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if [ ! -e /etc/ssh/ssh_host_rsa_key -o ! -e /etc/ssh/ssh_host_ecdsa_key -o ! -e /etc/ssh/ssh_host_ed25519_key ]; then
+    case "$1" in
+    start)
+        echo "Generating host keys for sshd ..."
+        ssh-keygen -A
+        ;;
+    esac
+fi

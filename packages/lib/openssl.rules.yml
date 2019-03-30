@@ -1,0 +1,28 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist2_arch -%}
+"build_dist2_{{arch|ymlqe}}":
+  reqs: ["build_dist1_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    ./Configure \
+{%- if arch == "aarch64" %}
+        linux-aarch64 \
+{%- elif arch == "arm" or arch == "armhf" %}
+        linux-armv4 \
+{%- elif arch == "x86_64" %}
+        linux-x86_64 \
+{%- else %}
+        linux-generic32 \
+{%- endif %}
+        shared zlib \
+        --cross-compile-prefix='{{work_dir|shsqe}}/toolchain/{{arch|shsqe}}/bin/{{target|shsqe}}-' \
+        --prefix=/usr \
+        --openssldir=/etc/ssl && \
+    {{make()}} && \
+    
+    {{make(["install", "DESTDIR=" + work_dir + "/dist/" + arch + "/packages/" + package,
+        "MANDIR=/usr/share/man", "MANSUFFIX=ssl"])}} && \
+    cd "$saved_cwd"
+{%- endblock %}

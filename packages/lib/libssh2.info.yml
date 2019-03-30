@@ -1,0 +1,19 @@
+name: libssh2
+version: 1.8.0
+url: 'https://www.libssh2.org/download'
+ext: tar.gz
+additional_doc_files: ['RELEASE-NOTES']
+depends: [base/glibc, base/zlib, lib/openssl]
+enable_shared: true
+enable_static: true
+autoconf: true
+autoconf_args:
+- '--with-openssl'
+- '--without-libgcrypt'
+- '--without-libgcrypt-prefix'
+- '--without-wincng'
+- '--without-libcrypt32-prefix'
+- '--without-libmbedtls-prefix'
+- '--with-libz'
+fix_ldflags: true
+source_file_sha256: '39f34e2f6835f4b992cafe8625073a88e5a28ba78f83e8099610a7b3af4676d4'

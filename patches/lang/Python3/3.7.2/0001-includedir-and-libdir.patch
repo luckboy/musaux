@@ -1,0 +1,14 @@
+--- Python-3.7.2-orig/setup.py	2018-12-23 22:37:36.000000000 +0100
++++ Python-3.7.2/setup.py	2019-03-04 17:42:30.216813247 +0100
+@@ -588,8 +588,9 @@
+                         add_dir_to_list(dir_list, directory)
+ 
+         if (not cross_compiling and
+-                os.path.normpath(sys.base_prefix) != '/usr' and
+-                not sysconfig.get_config_var('PYTHONFRAMEWORK')):
++                os.path.normpath(sys.base_prefix) != '/usr' and \
++                not sysconfig.get_config_var('PYTHONFRAMEWORK')) and \
++                not "DONT_ADD_INCLUDEDIR_AND_LIBDIR" in os.environ:
+             # OSX note: Don't add LIBDIR and INCLUDEDIR to building a framework
+             # (PYTHONFRAMEWORK is set) to avoid # linking problems when
+             # building a framework with different architectures than

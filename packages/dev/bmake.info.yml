@@ -1,0 +1,7 @@
+name: bmake
+version: '20181221'
+url: 'http://www.crufty.net/ftp/pub/sjg'
+ext: tar.gz
+source_dir: bmake
+depends: [base/glibc]
+source_file_sha256: 'fc0948b4eb0cf21fcec4f89660c0295150c55bf070d4b7445858947f84f7e67e'

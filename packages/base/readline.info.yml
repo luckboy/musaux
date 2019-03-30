@@ -1,0 +1,7 @@
+name: readline
+version: '8.0'
+url: 'https://ftp.gnu.org/gnu/readline'
+ext: tar.gz
+additional_doc_files: [CHANGELOG, CHANGES]
+depends: [base/glibc, base/ncurses]
+source_file_sha256: 'e339f51971478d369f8a053a330a190781acb9864cf4c541060f12078948e461'

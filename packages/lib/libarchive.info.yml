@@ -1,0 +1,27 @@
+name: libarchive
+version: 3.3.3
+url: 'http://libarchive.org/downloads'
+ext: tar.gz
+additional_doc_files: [README.md]
+depends:
+- arch/bzip2
+- arch/lz4
+- arch/xz
+- arch/zstd
+- base/acl
+- base/attr
+- base/glibc
+- base/zlib
+- lib/libxml2
+- lib/lzo
+- lib/nettle
+enable_shared: true
+enable_static: true
+autoconf: true
+autoconf_args:
+- '--with-lzo2'
+- '--without-cng'
+- '--without-openssl'
+- '--without-expat'
+fix_ldflags: true
+source_file_sha256: 'ba7eb1781c9fbbae178c4c6bad1c6eb08edab9a1496c64833d1715d022b30e2e'

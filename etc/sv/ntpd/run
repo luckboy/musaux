@@ -1,0 +1,5 @@
+#!/bin/sh
+. /etc/default/ntpd
+sv start syslogd || exit 1
+exec > /dev/null
+exec ntpd -n $OPTS $SERVERS

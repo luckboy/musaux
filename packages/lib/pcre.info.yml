@@ -1,0 +1,21 @@
+name: pcre
+version: '8.43'
+url: 'https://ftp.pcre.org/pub/pcre'
+ext: tar.bz2
+depends: [arch/bzip2, base/glibc, base/libedit, base/zlib]
+enable_shared: true
+enable_static: true
+autoconf: true
+autoconf_args:
+- '--enable-pcre16'
+- '--enable-pcre32'
+- '--enable-cpp'
+- '--enable-jit'
+- '--enable-unicode-properties'
+- '--enable-pcregrep-libz'
+- '--enable-pcregrep-libbz2'
+- '--enable-pcretest-libedit'
+- '--disable-pcretest-libreadline'
+fix_ldflags: true
+fix_libtool: true
+source_file_sha256: '91e762520003013834ac1adb4a938d53b22a216341c061b0cf05603b290faf6b'

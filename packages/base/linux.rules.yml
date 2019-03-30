@@ -1,0 +1,185 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_distclean_arch -%}
+"build_distclean_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}":
+  reqs:
+  - [toolchain, "build_toolchain_{{arch|ymlqe}}"]
+{%- for depend in (depends or []) %}
+  - ["{{depend|ymlqe}}", "build_dist_{{arch|ymlqe}}"]
+{%- endfor %}
+  cmd: |
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-{{kernel_platform|shsqe}}'
+    rm -fr 'dist/{{arch|shsqe}}/kernel/{{kernel_platform|shsqe}}'
+    rm -fr 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}/{{kernel_platform|shsqe}}'
+
+"build_distclean_{{arch|ymlqe}}":
+  phony: true
+  reqs: ["build_distclean_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+{%- endblock %}
+
+{% block build_dist1_arch -%}
+"build_dist1_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}":
+  reqs: 
+  - "build_distclean_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"
+  - "extract_{{arch|ymlqe}}"
+  
+"build_dist1_{{arch|ymlqe}}":
+  phony: true
+  reqs: ["build_dist1_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+{%- endblock %}
+
+{% block build_dist2_arch -%}
+"build_dist2_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}":
+  reqs: ["build_dist1_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    {
+        if [ -f '{{package_collection_dir|shsqe}}/configs/{{package|shsqe}}/{{version|shsqe}}/{{arch|shsqe}}-{{kernel_platform|shsqe}}.config' ]; then
+            mkdir -p "$saved_cwd"'/build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-{{kernel_platform|shsqe}}' && \
+            cp '{{package_collection_dir|shsqe}}/configs/{{package|shsqe}}/{{version|shsqe}}/{{arch|shsqe}}-{{kernel_platform|shsqe}}.config' \
+                "$saved_cwd"'/build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-{{kernel_platform|shsqe}}/.config'
+        else
+            {{gnu_make([
+                "O=" + work_dir + "/build/" + arch + "/" + package + "/" + source_dir + "-" + kernel_platform,
+                kernel_platform + "_defconfig",
+                "ARCH=" + kernel_arch,
+                "CROSS_COMPILE=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-"
+            ], ident = 12)}}
+        fi
+    } && \
+    {{gnu_make([
+        "O=" + work_dir + "/build/" + arch + "/" + package + "/" + source_dir + "-" + kernel_platform,
+        "zImage", "dtbs", "modules",
+        "ARCH=" + kernel_arch,
+        "CROSS_COMPILE=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-"        
+        ])}} {# "ccflags-y=-fno-stack-protector" + ((kernel_platform == "vexpress" and (" -I" + work_dir + "/build/" + arch + "/" + package + "/" + source_dir + "/arch/arm/plat-versatile/include")) or "") #} && \
+    cd "$saved_cwd" && \
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-{{kernel_platform|shsqe}}' && \
+    mkdir -p "$saved_cwd/"'dist/{{arch|shsqe}}/kernel/{{kernel_platform|shsqe}}' && \
+    cp 'arch/{{kernel_arch|shsqe}}/boot/zImage' "$saved_cwd/"'dist/{{arch|shsqe}}/kernel/{{kernel_platform|shsqe}}' && \
+    cp 'arch/{{kernel_arch|shsqe}}/boot/dts/'*.dtb "$saved_cwd/"'dist/{{arch|shsqe}}/kernel/{{kernel_platform|shsqe}}' && \
+    cd "$saved_cwd" && \
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    {{gnu_make([
+        "O=" + work_dir + "/build/" + arch + "/" + package + "/" + source_dir + "-" + kernel_platform,
+        "modules_install",
+        "ARCH=" + kernel_arch,
+        "CROSS_COMPILE=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-",
+        "INSTALL_MOD_PATH=" + work_dir + "/dist/" + arch + "/packages/" + package + "/" + kernel_platform
+    ])}} && \
+    cd "$saved_cwd" && \
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-{{kernel_platform|shsqe}}' && \
+    mkdir -p "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/{{kernel_platform|shsqe}}/boot' && \
+    cp .config "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/{{kernel_platform|shsqe}}/boot/config' && \
+    cp System.map "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/{{kernel_platform|shsqe}}/boot/System.map' && \
+    cd "$saved_cwd"
+
+"build_dist2_{{arch|ymlqe}}":
+  phony: true
+  reqs: ["build_dist2_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+{%- endblock %}
+
+{% block build_dist3_arch -%}
+"build_dist3_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}":
+  reqs: ["build_dist2_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+  cmd: |
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}/{{kernel_platform|shsqe}}' && \
+    rm -fr 'lib/modules/{{version|shsqe}}/build' && \
+    rm -fr 'lib/modules/{{version|shsqe}}/source' && \
+    cd "$saved_cwd"
+
+"build_dist3_{{arch|ymlqe}}":
+  phony: true
+  reqs: ["build_dist3_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+{%- endblock %}
+
+{% block build_dist4_arch -%}
+"build_dist4_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}":
+  reqs: ["build_dist3_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+  cmd: |
+   cd "$saved_cwd" && \
+    '{{package_collection_dir|shsqe}}/scripts/post_build_kernel.sh' \
+        '{{arch|shsqe}}' \
+        '{{package|shsqe}}' \
+        '{{name|shsqe}}' \
+        '{{source_dir|shsqe}}' \
+        '{{doc_dir|shsqe}}' \
+        '{{kernel_platform|shsqe}}'
+{%- if doc_files %}
+{%- for doc_file in doc_files %} \
+        '{{doc_file|shsqe}}'
+{%- endfor %}
+{%- endif %}
+
+"build_dist4_{{arch|ymlqe}}":
+  phony: true
+  reqs: ["build_dist4_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+{%- endblock %}
+
+{% block build_dist5_arch -%}
+"build_dist5_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}":
+  reqs: ["build_dist4_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    {
+        if [ -d LICENSES ]; then
+            for doc_file in `(find LICENSES -type f 2> /dev/null; true)`; do
+                mkdir -p "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/{{kernel_platform|shsqe}}/usr/share/doc/{{name|shsqe}}/'"`dirname "$doc_file"`" || exit 1
+                gzip -9c "$doc_file" > "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/{{kernel_platform|shsqe}}/usr/share/doc/{{name|shsqe}}/'"$doc_file.gz" || exit 1
+            done
+        fi
+    } && \
+    cd "$saved_cwd"
+
+"build_dist5_{{arch|ymlqe}}":
+  phony: true
+  reqs: ["build_dist5_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+{%- endblock %}
+
+{% block build_dist6_arch -%}
+"build_dist6_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}":
+  reqs: ["build_dist5_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+
+"build_dist6_{{arch|ymlqe}}":
+  phony: true
+  reqs: ["build_dist6_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+{%- endblock %}
+
+{% block build_dist7_arch -%}
+"build_dist7_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}":
+  reqs: ["build_dist6_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+
+"build_dist7_{{arch|ymlqe}}":
+  phony: true
+  reqs: ["build_dist7_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+{%- endblock %}
+
+{% block build_dist_arch -%}
+"build_dist_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}":
+  reqs: ["build_dist7_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+
+"build_dist_{{arch|ymlqe}}":
+  phony: true
+  reqs: ["build_dist_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"]
+{%- endblock %}
+
+{% block clean_dist -%}
+clean_dist:
+  phony: true
+  unmake:
+  - "build_distclean_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"
+  - "build_dist1_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"
+  - "build_dist2_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"
+  - "build_dist3_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"
+  - "build_dist4_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"
+  - "build_dist5_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"
+  - "build_dist6_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"
+  - "build_dist7_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"
+  - "build_dist_{{arch|ymlqe}}__{{kernel_platform|ymlqe}}"
+  cmd: |
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-{{kernel_platform|shsqe}}'
+    rm -fr 'dist/{{arch|shsqe}}/kernel/{{kernel_platform|shsqe}}'
+    rm -fr 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}/{{kernel_platform|shsqe}}'
+{%- endblock %}

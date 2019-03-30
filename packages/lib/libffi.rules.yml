@@ -1,0 +1,17 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist1_arch -%}
+"build_dist1_{{arch|ymlqe}}":
+  reqs: 
+  - "build_distclean_{{arch|ymlqe}}"
+  - "extract_{{arch|ymlqe}}"
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    sed -i 's/^includesdir = \$(libdir)\/@PACKAGE_NAME@-@PACKAGE_VERSION@\/include/includesdir = \$(includedir)/' include/Makefile.in && \
+    sed -i \
+        -e 's/^includedir=\${libdir}\/@PACKAGE_NAME@-@PACKAGE_VERSION@\/include/includedir=@includedir@/' \
+        -e 's/^Cflags: -I\${includedir}/Cflags:/' \
+        libffi.pc.in && \
+    cd "$saved_cwd"
+{%- endblock %}

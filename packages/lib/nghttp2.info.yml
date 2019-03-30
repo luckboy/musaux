@@ -1,0 +1,19 @@
+name: nghttp2
+version: 1.36.0
+url: 'https://github.com/nghttp2/nghttp2/releases/download/v1.36.0'
+ext: tar.xz
+additional_doc_files: [README.rst]
+depends: [base/glibc]
+enable_shared: true
+enable_static: true
+autoconf: true
+autoconf_args:
+- '--disable-examples'
+- '--disable-python-bindings'
+- '--enable-lib-only'
+- '--without-libxml2'
+- '--without-jemalloc'
+- '--without-systemd'
+- '--without-cython'
+- '--with-boost=no'
+source_file_sha256: 'e9bb86157b88eda5a6844a232e039febbb52c1aa44b640acbbfabe729b8287fc'

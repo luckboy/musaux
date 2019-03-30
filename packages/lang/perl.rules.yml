@@ -1,0 +1,150 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block download -%}
+download:
+  cmd: |
+    '{{package_collection_dir|shsqe}}/scripts/download.sh' \
+        '{{package|shsqe}}' \
+        '{{url|shsqe}}' \
+        '{{source_file|shsqe}}' \
+        '{{source_file_sha256|shsqe}}'
+    '{{package_collection_dir|shsqe}}/scripts/download.sh' \
+        '{{package|shsqe}}' \
+        '{{cross_url|shsqe}}' \
+        'perl-cross-{{cross_version|shsqe}}.{{cross_ext|shsqe}}' \
+        '{{cross_source_file_sha256|shsqe}}'
+{%- endblock %}
+
+{% block extract_arch -%}
+"extract_{{arch|ymlqe}}":
+  reqs: [download]
+  cmd: |
+    '{{package_collection_dir|shsqe}}/scripts/extract.sh' \
+        '{{package_collection_dir|shsqe}}' \
+        '{{arch|shsqe}}' \
+        '{{package|shsqe}}' \
+        '{{source_file|shsqe}}' \
+        '{{source_dir|shsqe}}' \
+        '{{version|shsqe}}'
+    '{{package_collection_dir|shsqe}}/scripts/extract.sh' \
+        '{{package_collection_dir|shsqe}}' \
+        '{{arch|shsqe}}' \
+        '{{package|shsqe}}' \
+        'perl-cross-{{cross_version|shsqe}}.{{cross_ext|shsqe}}' \ \
+        'perl-cross-{{cross_version|shsqe}}'
+{%- endblock %}
+
+{% block build_distclean_arch -%}
+"build_distclean_{{arch|ymlqe}}":
+  reqs:
+  - [toolchain, "build_toolchain_{{arch|ymlqe}}"]
+{%- for depend in (depends or []) %}
+  - ["{{depend|ymlqe}}", "build_dist_{{arch|ymlqe}}"]
+{%- endfor %}
+{%- if not toolchain %}
+  unmake: ["extract_{{arch|ymlqe}}"]
+{%- endif %}
+  cmd: |
+    '{{package_collection_dir|shsqe}}/scripts/sysroot.sh' \
+        '{{arch|shsqe}}' \
+        '{{package|shsqe}}' \
+        rm all
+{%- if toolchain %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-dist'
+{%- else %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}'
+{%- endif %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/perl-cross-{{cross_version|shsqe}}'
+    rm -fr 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}'
+    rm -f 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}.suid_files'
+{%- endblock %}
+
+{% block build_dist1_arch -%}
+"build_dist1_{{arch|ymlqe}}":
+  reqs: 
+  - "build_distclean_{{arch|ymlqe}}"
+  - "extract_{{arch|ymlqe}}"
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}'
+    cp -r 'perl-cross-{{cross_version|shsqe}}/'* '{{source_dir|shsqe}}'
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block build_dist2_arch -%}
+"build_dist2_{{arch|ymlqe}}":
+  reqs: ["build_dist1_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    ./configure \
+        --prefix=/usr \
+        --target='{{target|shsqe}}' \
+        --with-cc='{{work_dir|shsqe}}/toolchain/{{arch|shsqe}}/bin/{{target|shsqe}}-gcc' \
+        --with-cpp='{{work_dir|shsqe}}/toolchain/{{arch|shsqe}}/bin/{{target|shsqe}}-cpp' \
+        --with-ranlib='{{work_dir|shsqe}}/toolchain/{{arch|shsqe}}/bin/{{target|shsqe}}-ranlib' \
+        --with-objdump='{{work_dir|shsqe}}/toolchain/{{arch|shsqe}}/bin/{{target|shsqe}}-objdump' \
+        -Dar='{{work_dir|shsqe}}/toolchain/{{arch|shsqe}}/bin/{{target|shsqe}}-ar' \
+        -Dld='{{work_dir|shsqe}}/toolchain/{{arch|shsqe}}/bin/{{target|shsqe}}-gcc' \
+        -Dnm='{{work_dir|shsqe}}/toolchain/{{arch|shsqe}}/bin/{{target|shsqe}}-nm' \
+        -Dreadelf='{{work_dir|shsqe}}/toolchain/{{arch|shsqe}}/bin/{{target|shsqe}}-readelf' \
+        -Dvendorprefix=/usr \
+        -Dman1ext=1perl \
+        -Dman3ext=3perl \
+        -Dusethreads \
+        -Duseshrplib && \
+    {{gnu_make()}} && \
+    {{gnu_make(["install", "DESTDIR=" + work_dir + "/dist/" + arch + "/packages/" + package])}} && \
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block build_dist3_arch -%}
+"build_dist3_{{arch|ymlqe}}":
+  reqs: ["build_dist2_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    rm -f usr/share/man/man1/perlthanks.1perl && \
+    ln -s perlbug.1 usr/share/man/man1/perlthanks.1perl && \
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block clean_dist -%}
+clean_dist:
+  phony: true
+  unmake:
+{%- if not toolchain %}
+  - "extract_{{arch|ymlqe}}"
+{%- endif %}
+  - "build_distclean_{{arch|ymlqe}}"
+  - "build_dist1_{{arch|ymlqe}}"
+  - "build_dist2_{{arch|ymlqe}}"
+  - "build_dist3_{{arch|ymlqe}}"
+  - "build_dist4_{{arch|ymlqe}}"
+  - "build_dist5_{{arch|ymlqe}}"
+  - "build_dist6_{{arch|ymlqe}}"
+  - "build_dist7_{{arch|ymlqe}}"
+  - "build_dist_{{arch|ymlqe}}"
+  cmd: |
+    '{{package_collection_dir|shsqe}}/scripts/sysroot.sh' \
+        '{{arch|shsqe}}' \
+        '{{package|shsqe}}' \
+        rm all
+{%- if toolchain %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-dist'
+{%- else %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}'
+{%- endif %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/perl-cross-{{cross_version|shsqe}}'
+    rm -fr 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}'
+    rm -f 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}.suid_files'
+{%- endblock %}
+
+{% block rules -%}
+gen_cross_source_file_sha256:
+  phony: true
+  reqs: [download]
+  cmd: |
+    sha256="`sha256sum 'download/{{package|shsqe}}/perl-cross-{{cross_version|shsqe}}.{{cross_ext|shsqe}}' | cut -d ' ' -f 1`"
+    printf "cross_source_file_sha256: '%s'\n" "$sha256" >> '{{package_collection_dir|shsqe}}/packages/{{package|shsqe}}.info.yml'
+{%- endblock %}

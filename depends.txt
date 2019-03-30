@@ -1,0 +1,11 @@
+Dependencies:
+gawk
+genext2fs
+gperf
+groff
+python-dev
+python-sphinx
+swig
+texinfo
+unbound-anchor
+unbound-host

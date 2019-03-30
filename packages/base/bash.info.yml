@@ -1,0 +1,12 @@
+name: bash
+version: '5.0'
+url: 'https://ftp.gnu.org/gnu/bash'
+ext: tar.gz
+additional_doc_files: [CHANGES, COMPAT, POSIX, RBASH]
+depends: [base/glibc, base/ncurses, base/readline]
+autoconf: true
+autoconf_args:
+- '--libdir=/lib'
+- '--without-bash-malloc'
+- '--with-installed-readline'
+source_file_sha256: 'b4a80f2ac66170b2913efbfb9f2594f1f76c7b1afd11f799e22035d63077fb4d'

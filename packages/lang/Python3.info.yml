@@ -1,0 +1,31 @@
+name: Python3
+version: 3.7.2
+url: 'https://www.python.org/ftp/python/3.7.2'
+source_file: 'Python-3.7.2.tar.xz'
+source_dir: 'Python-3.7.2'
+additional_doc_files: [README.rst]
+depends:
+- arch/bzip2
+- arch/xz
+- base/glibc
+- base/ncurses
+- base/readline
+- base/zlib
+- db/sqlite
+- lib/db
+- lib/expat
+- lib/libffi
+- lib/openssl
+enable_shared: true
+host_autoconf_args:
+- '--without-ensurepip'
+autoconf_args:
+- '--enable-loadable-sqlite-extensions'
+- '--enable-ipv6'
+- '--with-system-expat'
+- '--with-system-ffi'
+- '--with-dbmliborder=bdb'
+- '--without-ensurepip'
+- '--with-ssl-default-suites=openssl'
+fix_ldflags: true
+source_file_sha256: 'd83fe8ce51b1bb48bbcf0550fd265b9a75cdfdfa93f916f9e700aef8444bf1bb'

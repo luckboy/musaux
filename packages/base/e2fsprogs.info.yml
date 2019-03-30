@@ -1,0 +1,16 @@
+name: e2fsprogs
+version: 1.44.5
+url: 'https://www.kernel.org/pub/linux/kernel/people/tytso/e2fsprogs/v1.44.5'
+ext: tar.xz
+additional_doc_files: [NOTICE]
+depends: [base/glibc, 'base/util-linux']
+autoconf_args:
+- '--sysconfdir=/etc'
+- '--sbindir=/sbin'
+- '--enable-elf-shlibs'
+- '--disable-libuuid'
+- '--disable-libblkid'
+- '--disable-fsck'
+- '--disable-uuidd'
+fix_ldflags: true
+source_file_sha256: 'ba5eb3069d69160d96818bb9700de9ab5a8458d9add1fd85d427c0000d34c5b9'

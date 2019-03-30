@@ -1,0 +1,9 @@
+name: libpsl
+version: 0.20.2
+url: 'https://github.com/rockdaboot/libpsl/releases/download/libpsl-0.20.2'
+ext: tar.gz
+depends: [base/glibc, lib/libidn2, lib/libunistring]
+enable_shared: true
+enable_static: true
+fix_ldflags: true
+source_file_sha256: 'f8fd0aeb66252dfcc638f14d9be1e2362fdaf2ca86bde0444ff4d5cc961b560f'

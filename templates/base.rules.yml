@@ -1,0 +1,44 @@
+{%- set arch = arch or "armhf" -%}
+{%- if arch == "arm" -%}
+{%- set target = "arm-unknown-linux-gnueabi" -%}
+{%- elif arch == "armhf" -%}
+{%- set target = "arm-unknown-linux-gnueabihf" -%}
+{%- else -%}
+{%- set target = arch + "-unknwon-linux-gnu" -%}
+{%- endif -%}
+{%- if arch == "armhf" -%}
+{%- set target_arch = "arm" %}
+{%- else -%}
+{%- set target_arch = arch %}
+{%- endif -%}
+{%- if arch == "aarch64" -%}
+{%- set kernel_arch = "arm64" -%}
+{%- elif arch == "armhf" -%}
+{%- set kernel_arch = "arm" -%}
+{%- else -%}
+{%- set kernel_arch = arch -%}
+{%- endif -%}
+{%- set boot_platform = boot_platform or "Bananapi" -%}
+{%- if boot_platform == "Bananapi" -%}
+{%- set boot_bin = boot_bin or "u-boot-sunxi-with-spl.bin" -%}
+{%- else -%}
+{%- set boot_bin = boot_bin or "u-boot.bin" -%}
+{%- endif -%}
+{%- set kernel_platform = kernel_platform or "sunxi" -%}
+{%- set kernel_dtb = kernel_dtb or "sun7i-a20-bananapi.dtb" -%}
+{%- set kernel_addr = "0x46000000" -%}
+{%- set kernel_dtb_addr = "0x49000000" -%}
+{%- set run_kernel_platform = run_kernel_platform or "vexpress" -%}
+{%- set run_kernel_dtb = run_kernel_dtb or "vexpress-v2p-ca9.dtb" -%}
+{%- if arch == "armhf" -%}
+{%- set qemu_arch = "arm" %}
+{%- else -%}
+{%- set qemu_arch = arch %}
+{%- endif -%}
+{%- set qemu_machine = qemu_machine or "vexpress-a9" -%}
+{%- set qemu_system_arch = qemu_system_arch or ("qemu-system-" + qemu_arch) -%}
+{%- set qemu_system_arch_opts = qemu_system_arch_opts or "-serial stdio" -%}
+{%- set rpath_link_ldflags = (
+    "-Wl,-rpath-link=" + work_dir + "/sysroot/" + arch + "/lib " +
+    "-Wl,-rpath-link=" + work_dir + "/sysroot/" + arch + "/usr/lib") -%}
+{%- block base_rules -%}{%- endblock -%}

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+
+touch /etc/runit/stopid
+chmod 100 /etc/runit/stopit

@@ -1,0 +1,6 @@
+name: 'net-tools'
+version: '1.60+git20161116.90da8a0'
+url: 'http://http.debian.net/debian/pool/main/n/net-tools'
+source_file: 'net-tools_1.60+git20161116.90da8a0.orig.tar.gz'
+depends: [base/glibc]
+source_file_sha256: 'd3c25c4b70541bb2bb54ebb21e2443811cfd1cbbf4c357d0e960e2973bc4192a'

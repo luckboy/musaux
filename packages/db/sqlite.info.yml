@@ -1,0 +1,20 @@
+name: sqlite
+version: 3.27.2
+url: 'https://www.sqlite.org/2019'
+source_file: 'sqlite-src-3270200.zip'
+source_dir: 'sqlite-src-3270200'
+additional_doc_files: [README.md]
+depends: [base/glibc, base/libedit, base/zlib]
+enable_shared: true
+enable_static: true
+autoconf: true
+autoconf_args:
+- '--enable-threadsafe'
+- '--disable-tcl'
+- '--enable-editline'
+- '--disable-readline'
+- '--enable-fts4'
+- '--enable-fts5'
+- '--enable-json1'
+fix_ldflags: true
+source_file_sha256: '15bd4286f2310f5fae085a1e03d9e6a5a0bb7373dcf8d4020868792e840fdf0a'

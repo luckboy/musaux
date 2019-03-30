@@ -1,0 +1,4 @@
+#!/bin/sh
+. /etc/default/sshd
+sv start syslogd || exit 1
+exec /usr/sbin/sshd -D $OPTS

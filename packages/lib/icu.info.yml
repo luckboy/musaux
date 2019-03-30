@@ -1,0 +1,12 @@
+name: icu
+version: '63.1'
+url: 'http://download.icu-project.org/files/icu4c/63.1'
+source_file: 'icu4c-63_1-src.tgz'
+source_dir: icu
+additional_doc_files: [license.html, readme.html]
+depends: [base/glibc]
+enable_shared: true
+enable_static: true
+autoconf_args:
+- '--mandir=/usr/share/man'
+source_file_sha256: '05c490b69454fce5860b7e8e2821231674af0a11d7ef2febea9a32512998cb9d'

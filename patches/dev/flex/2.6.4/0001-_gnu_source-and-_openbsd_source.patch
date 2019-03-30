@@ -1,0 +1,13 @@
+diff -Naur flex-2.6.4-orig/src/flexdef.h flex-2.6.4/src/flexdef.h
+--- flex-2.6.4-orig/src/flexdef.h	2017-05-03 20:13:14.000000000 +0200
++++ flex-2.6.4/src/flexdef.h	2018-08-17 14:18:14.818622735 +0200
+@@ -35,6 +35,9 @@
+ #ifndef FLEXDEF_H
+ #define FLEXDEF_H 1
+ 
++#define _GNU_SOURCE
++#define _OPENBSD_SOURCE
++
+ #ifdef HAVE_CONFIG_H
+ #include <config.h>
+ #endif

@@ -1,0 +1,78 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist2_arch -%}
+"build_dist2_{{arch|ymlqe}}":
+  reqs: ["build_dist1_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}/runit-{{version|shsqe}}/src' && \
+    sed -i 's/ -static//' Makefile && \
+    echo 'linux-:arm-:-:arm-:-' > systype && \
+    echo "$saved_cwd"'/toolchain/{{arch|shsqe}}/bin/{{target|shsqe}}-gcc -O2 -Wall' > conf-cc && \
+    echo "$saved_cwd"'/toolchain/{{arch|shsqe}}/bin/{{target|shsqe}}-gcc -s' > conf-ld && \
+    {
+        sed_script='s/\([\/\\]\)/\\\1/g'
+        espaced_ar="`printf "%s" '{{work_dir|shsqe}}/toolchain/{{arch|shsqe}}/bin/{{target|shsqe}}-ar' | sed "$sed_script"`"
+        espaced_ranlib="`printf "%s" '{{work_dir|shsqe}}/toolchain/{{arch|shsqe}}/bin/{{target|shsqe}}-ranlib' | sed "$sed_script"`"
+        sed -i \
+            -e 's/'\''ar /'\'"$espaced_ar"' /' \
+            -e 's/'\''ranlib /'\'"$espaced_ranlib"' /' \
+            print-ar.sh
+    }
+    rm -f compile && \
+    sh print-cc.sh > compile && \
+    chmod 755 compile && \
+    rm -f load && \
+    sh print-ld.sh > load && \
+    chmod 755 load && \
+    rm -f makelib && \
+    sh print-ar.sh > makelib && \
+    chmod 755 makelib && \
+    echo -n >  chkshsgr.o && \
+    echo "#!/bin/sh" > chkshsgr && \
+    echo "exec true" >> chkshsgr && \
+    chmod 755 chkshsgr && \
+    echo -n > socket.lib && \
+    {{gnu_make()}} && \
+    mkdir -p "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/sbin' && \
+    {
+        for prog in \
+            chpst \
+            runit \
+            runit-init \
+            runsv \
+            runsvchdir \
+            runsvdir \
+            sv \
+            svlogd \
+            utmpset; do
+            cp "$prog" "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/sbin/'"$prog" || exit 1
+        done
+    } && \
+    mkdir -p "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/man/man8' && \
+    {
+        for man in \
+            chpst.8 \
+            runit.8 \
+            runit-init.8 \
+            runsv.8 \
+            runsvchdir.8 \
+            runsvdir.8 \
+            sv.8 \
+            svlogd.8 \
+            utmpset.8; do
+            cp "../man/$man" "$saved_cwd"'/dist/{{arch|shsqe}}/packages/{{package|shsqe}}/usr/share/man/man8/'"$man" || exit 1
+        done
+    } && \
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block build_dist3_arch -%}
+"build_dist3_{{arch|ymlqe}}":
+  reqs: ["build_dist2_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    ln -s runit-init sbin/init && \
+    cd "$saved_cwd"
+{%- endblock %}

@@ -1,0 +1,6 @@
+name: linux
+version: 4.14.109
+url: 'https://cdn.kernel.org/pub/linux/kernel/v4.x'
+ext: tar.xz
+additional_doc_files: [MAINTAINERS]
+source_file_sha256: '3764f165f779568745f1468d8f7e1db65d94eae9cd8d1350f4fe003a0fd88ee0'

@@ -1,0 +1,20 @@
+name: lynx
+version: 2.8.9
+url: 'https://invisible-mirror.net/archives/lynx/tarballs'
+source_file: lynx2.8.9rel.1.tar.bz2
+source_dir: lynx2.8.9rel.1
+additional_doc_files: [CHANGES, COPYHEADER, COPYHEADER.asc, COPYING.asc, PROBLEMS]
+depends: [base/glibc, base/ncurses, lib/libidn, lib/openssl]
+autoconf_args:
+- '--sysconfdir=/etc'
+- '--without-dbmalloc'
+- '--without-dmalloc'
+- '--enable-nls'
+- '--without-gnutls'
+- '--without-socks'
+- '--without-socks5'
+- '--enable-ipv6'
+- '--with-screen=ncurses'
+- '--disable-rpath-hack'
+fix_ldflags: true
+source_file_sha256: '387f193d7792f9cfada14c60b0e5c0bff18f227d9257a39483e14fa1aaf79595'

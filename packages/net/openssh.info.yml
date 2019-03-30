@@ -1,0 +1,31 @@
+name: openssh
+version: 7.9p1
+url: 'https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable'
+ext: tar.gz
+additional_doc_files:
+- LICENCE
+- PROTOCOL
+- PROTOCOL.agent
+- PROTOCOL.certkeys
+- PROTOCOL.chacha20poly1305
+- PROTOCOL.key
+- PROTOCOL.krl
+- PROTOCOL.mux
+- README.dns
+- README.platform
+- README.privsep
+- README.tun
+depends: [base/Linux-PAM, base/glibc, base/libedit, base/zlib, lib/ldns, lib/openssl, net/krb5]
+autoconf_args:
+- '--sysconfdir=/etc/ssh'
+- '--localstatedir=/var'
+- '--disable-strip'
+- '--with-libedit'
+- '--with-ssl-engine'
+- '--with-pam'
+- '--with-privsep-user=nobody'
+- '--without-selinux'
+- '--with-mantype=man'
+- '--with-md5-passwords'
+fix_ldflags: true
+source_file_sha256: '6b4b3ba2253d84ed3771c8050728d597c91cfce898713beb7b64a305b6f11aad'

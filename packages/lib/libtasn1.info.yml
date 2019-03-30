@@ -1,0 +1,9 @@
+name: libtasn1
+version: '4.13'
+url: 'https://ftp.gnu.org/gnu/libtasn1'
+ext: tar.gz
+additional_doc_files: [COPYING.LIB]
+depends: [base/glibc]
+enable_shared: true
+enable_static: true
+source_file_sha256: '7e528e8c317ddd156230c4e31d082cd13e7ddeb7a54824be82632209550c8cca'

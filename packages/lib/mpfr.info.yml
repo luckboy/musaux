@@ -1,0 +1,16 @@
+name: mpfr
+version: 4.0.1
+url: 'https://www.mpfr.org/mpfr-4.0.1'
+ext: tar.xz
+additional_doc_files: [BUGS, COPYING.LESSER]
+depends: [base/glibc, lib/gmp]
+enable_shared: true
+enable_static: true
+autoconf: true
+autoconf_args:
+- '--enable-thread-safe'
+toolchain: true
+toolchain_depends: [lib/gmp]
+toolchain_disable_shared: true
+toolchain_enable_static: true
+source_file_sha256: '67874a60826303ee2fb6affc6dc0ddd3e749e9bfcb4c8655e3953d0458a6e16e'

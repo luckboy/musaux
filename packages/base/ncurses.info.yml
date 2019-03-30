@@ -1,0 +1,20 @@
+name: ncurses
+version: '6.1'
+url: 'ftp://ftp.gnu.org/gnu/ncurses'
+ext: tar.gz
+additional_doc_files: [ANNOUNCE, 'TO-DO']
+depends: [base/glibc]
+autoconf: true
+autoconf_args:
+- '--without-ada'
+- '--with-cxx'
+- '--with-cxx-binding'
+- '--with-pkg-config-libdir=/usr/lib/pkgconfig'
+- '--enable-pc-files'
+- '--with-shared'
+- '--with-cxx-shared'
+- '--disable-stripping'
+- '--with-terminfo-dirs=/lib/terminfo:/usr/share/terminfo'
+- '--with-default-terminfo-dir=/lib/terminfo'
+- '--enable-widec'
+source_file_sha256: 'aa057eeeb4a14d470101eff4597d5833dcef5965331be3528c08d99cebaa0d17'

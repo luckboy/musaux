@@ -1,0 +1,17 @@
+name: ldns
+version: 1.7.0
+url: 'https://nlnetlabs.nl/downloads/ldns'
+ext: tar.gz
+additional_doc_files: [README.git, README.snapshots]
+depends: [base/glibc, lib/openssl]
+enable_shared: true
+enable_static: true
+autoconf_args:
+- '--sysconfdir=/etc'
+- '--sharedstatedir=/var'
+- '--with-drill'
+- '--without-pyldns'
+- '--without-pyldnsx'
+- '--with-trust-anchor=/etc/trusted-key.key'
+fix_ldflags: true
+source_file_sha256: 'c19f5b1b4fb374cfe34f4845ea11b1e0551ddc67803bd6ddd5d2a20f0997a6cc'

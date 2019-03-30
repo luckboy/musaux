@@ -1,0 +1,55 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist2_arch -%}
+"build_dist2_{{arch|ymlqe}}":
+  reqs: ["build_dist1_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    {{gnu_make([
+        "BUILD_CC=gcc",
+        "AR=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-ar",  
+        "CC=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-gcc",  
+        "RANLIB=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-ranlib",
+        "PAM_CAP=no",
+        "BUILD_GPERF=no"])}} && \
+    {{gnu_make(["-C", "pam_cap",
+        "BUILD_CC=gcc",
+        "AR=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-ar",  
+        "CC=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-gcc",  
+        "RANLIB=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-ranlib",
+        "PAM_CAP=yes",
+        "BUILD_GPERF=no"])}} && \
+    {{gnu_make(["install", "DESTDIR=" + work_dir + "/dist/" + arch + "/packages/" + package,
+        "prefix=/usr",
+        "BUILD_CC=gcc",
+        "lib=lib",
+        "RAISE_SETFCAP=no",
+        "PAM_CAP=no",
+        "BUILD_GPERF=no"])}} && \
+    {{gnu_make(["-C", "pam_cap", "install", "DESTDIR=" + work_dir + "/dist/" + arch + "/packages/" + package,
+        "prefix=/usr",
+        "LIBDIR=/lib",
+        "BUILD_CC=gcc",
+        "lib=lib",
+        "RAISE_SETFCAP=no",
+        "PAM_CAP=yes",
+        "BUILD_GPERF=no"])}} && \
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block build_dist3_arch -%}
+"build_dist3_{{arch|ymlqe}}":
+  reqs: ["build_dist2_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    {
+        for file in usr/lib/libcap.so.*; do
+            mv "$file" "lib/`basename "$file"`" || exit 1
+        done
+    } && \
+    ln -sf "../../lib/`readlink usr/lib/libcap.so`" usr/lib/libcap.so && \
+    chmod 755 lib/libcap.so.?.* && \
+    cd "$saved_cwd"
+{%- endblock %}

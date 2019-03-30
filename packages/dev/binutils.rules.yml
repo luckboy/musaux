@@ -1,0 +1,27 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist3_arch -%}
+"build_dist3_{{arch|ymlqe}}":
+  reqs: ["build_dist2_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    rm -f usr/share/man/man1/windmc.1 && \
+    rm -f usr/share/man/man1/windres.1 && \
+    rm -f usr/bin/ld && \
+    ln -s ld.bfd usr/bin/ld && \
+    {
+        for file in usr/bin/*; do
+            name="`basename "$file"`"
+            ln -s "$name" 'usr/bin/{{target|shsqe}}-'"$name" || exit 1
+        done
+    } && \
+    {
+        for file in 'usr/{{target|shsqe}}/bin/'*; do
+            name="`basename "$file"`"
+            rm -f 'usr/{{target|shsqe}}/bin/'"$name" || exit 1
+            ln -s "../../bin/$name" 'usr/{{target|shsqe}}/bin/'"$name" || exit 1
+        done
+    } && \
+    cd "$saved_cwd"
+{%- endblock %}

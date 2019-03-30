@@ -1,0 +1,4 @@
+#!/bin/sh
+. /etc/default/dhclient
+sv start syslogd || exit 1
+exec dhclient -d $OPTS $INTERFACES

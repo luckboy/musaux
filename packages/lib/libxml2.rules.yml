@@ -1,0 +1,18 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist3_arch -%}
+"build_dist3_{{arch|ymlqe}}":
+  reqs: ["build_dist2_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}' && \
+    mkdir -p usr/share/doc/libxml2 && \
+    {
+        for dir in examples html; do
+            mv 'usr/share/doc/libxml2-{{version|shsqe}}/'"$dir" "usr/share/doc/libxml2/$dir" || exit 1
+        done
+    } && \
+    rm -f 'usr/share/doc/libxml2-{{version|shsqe}}/'[A-Z]* && \
+    rmdir 'usr/share/doc/libxml2-{{version|shsqe}}' && \
+    cd "$saved_cwd"
+{%- endblock %}

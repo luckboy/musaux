@@ -1,0 +1,10 @@
+name: cpio
+version: '2.12'
+url: 'https://ftp.gnu.org/gnu/cpio'
+ext: tar.bz2
+depends: [base/glibc]
+autoconf: true
+autoconf_args:
+- '--bindir=/bin'
+- '--with-rmt=/usr/libexec/rmt'
+source_file_sha256: '70998c5816ace8407c8b101c9ba1ffd3ebbecba1f5031046893307580ec1296e'

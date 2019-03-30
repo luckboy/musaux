@@ -1,0 +1,24 @@
+{%- extends "templates/base.rules.yml" -%}
+
+{% block base_rules -%}
+"build_toolchain_{{arch|ymlqe}}":
+  reqs:
+{%- for depend in (depends or []) %}
+  - ["{{depend|ymlqe}}", "build_toolchain_{{arch|ymlqe}}"]
+{%- endfor %}
+
+build_toolchain:
+  phony: true
+  reqs: ["build_toolchain_{{arch|ymlqe}}"]
+  
+clean_toolchain:
+  phony: true
+  unmake: ["build_toolchain_{{arch|ymlqe}}"]
+  reqs:
+{%- for depend in (depends or []) %}
+  - ["{{depend|ymlqe}}", clean_toolchain]
+{%- endfor %}
+  cmd: |
+    rm -fr 'bootstrap/{{arch|shsqe}}'
+    rm -fr 'toolchain/{{arch|shsqe}}'
+{%- endblock %}
