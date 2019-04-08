@@ -3,9 +3,11 @@ gawk
 genext2fs
 gperf
 groff
+mtools
 python-dev
 python-sphinx
 swig
 texinfo
 unbound-anchor
 unbound-host
+zlib1g-dev
