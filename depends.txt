@@ -3,6 +3,7 @@ gawk
 genext2fs
 gperf
 groff
+gtk-doc-tools
 mtools
 python-dev
 python-sphinx
