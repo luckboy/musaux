@@ -1,0 +1,14 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist2_arch -%}
+"build_dist2_{{arch|ymlqe}}":
+  reqs: ["build_dist1_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    ./configure --prefix=/usr \
+        CXX='{{work_dir|shsqe}}/toolchain/{{arch|shsqe}}/bin/{{target|shsqe}}-g++' && \
+    {{gnu_make()}} && \
+    {{gnu_make(["install", "install-man", "DESTDIR=" + work_dir + "/dist/" + arch + "/packages/" + package])}} && \
+    cd "$saved_cwd"
+{%- endblock %}

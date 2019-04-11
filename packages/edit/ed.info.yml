@@ -1,0 +1,6 @@
+name: ed
+version: '1.15'
+url: 'https://ftp.gnu.org/gnu/ed'
+ext: tar.lz
+depends: [base/glibc]
+source_file_sha256: 'ad4489c0ad7a108c514262da28e6c2a426946fb408a3977ef1ed34308bdfd174'

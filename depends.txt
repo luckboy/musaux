@@ -4,6 +4,7 @@ genext2fs
 gperf
 groff
 gtk-doc-tools
+lzip
 mtools
 python-dev
 python-sphinx

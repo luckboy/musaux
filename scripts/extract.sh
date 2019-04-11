@@ -17,6 +17,8 @@ case "download/$package/$source_file" in
     (bzip2 -cd "download/$package/$source_file" | tar xf - -C "build/$arch/$package") || exit 1;;
 *.tar.xz)
     (xz -cd "download/$package/$source_file" | tar -xf - -C "build/$arch/$package") || exit 1;;
+*.tar.lz)
+    (lzip -cd "download/$package/$source_file" | tar -xf - -C "build/$arch/$package") || exit 1;;
 *.tar.lzma)
     (lzma -cd "download/$package/$source_file" | tar -xf - -C "build/$arch/$package") || exit 1;;
 *.zip)
@@ -35,6 +37,8 @@ if [ "$version" != "" ]; then
                 (bzip2 -cd "$package_collection_dir/patches/$package/$version/$patch" | patch -p1 -d "build/$arch/$package/$source_dir" -E -g0) || exit 1;;
             *.xz)
                 (xz -cd "$package_collection_dir/patches/$package/$version/$patch" | patch -p1 -d "build/$arch/$package/$source_dir" -E -g0) || exit 1;;
+            *.lz)
+                (lzip -cd "$package_collection_dir/patches/$package/$version/$patch" | patch -p1 -d "build/$arch/$package/$source_dir" -E -g0) || exit 1;;
             *.lzma)
                 (lzma -cd "$package_collection_dir/patches/$package/$version/$patch" | patch -p1 -d "build/$arch/$package/$source_dir" -E -g0) || exit 1;;
             *.zip)

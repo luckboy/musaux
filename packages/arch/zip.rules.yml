@@ -1,0 +1,21 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_dist2_arch -%}
+"build_dist2_{{arch|ymlqe}}":
+  reqs: ["build_dist1_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    {{make(["-f", "unix/Makefile", "zips",
+        "CC=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-gcc",
+        "CPP=" + work_dir + "/toolchain/" + arch + "/bin/" + target + "-cpp",
+        "CFLAGS=-I. -DUNIX -O3 -DBZIP2_SUPPORT -DUIDGID_NOT_16BIT -DLARGE_FILE_SUPPORT -DUNICODE_SUPPORT -DHAVE_DIRENT_H -DHAVE_TERMIOS_H",
+        "OBJA=",
+        "OCRCU8=crc32_.o ", "OCRCTB=",
+        "BINDIR=/usr/bin",
+        "LFLAGS1=", "LFLAGS2=-lbz2", "LN=ln -s"])}}
+    {{make(["-f", "unix/Makefile", "install",
+        "prefix=" + work_dir + "/dist/" + arch + "/packages/" + package + "/usr",
+        "MANDIR=" + work_dir + "/dist/" + arch + "/packages/" + package + "/usr/share/man/man1"])}} && \
+    cd "$saved_cwd"
+{%- endblock %}
