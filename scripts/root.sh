@@ -31,7 +31,7 @@ for dir in \
     usr/bin \
     usr/games \
     usr/include \
-    usr/lib \
+    usr/lib/locale \
     usr/local/bin \
     usr/local/etc \
     usr/local/games \
