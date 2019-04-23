@@ -31,8 +31,8 @@
   - "build_distclean_{{arch|ymlqe}}"
   - "extract_{{arch|ymlqe}}"
   cmd: |
-    cd 'build/{{arch|shsqe}}/{{package|shsqe}}'
     saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}'
     cat > python3-config <<EOF
     case "\$2" in
     --includes)
@@ -48,7 +48,6 @@
     chmod 755 python3-config
     cd "$saved_cwd"
 {%- endblock %}
-
 
 {% block build_dist2_arch -%}
 "build_dist2_{{arch|ymlqe}}":
