@@ -34,6 +34,7 @@
     saved_cwd="`pwd`"
     cd 'build/{{arch|shsqe}}/{{package|shsqe}}'
     cat > python3-config <<EOF
+    #!/bin/sh
     case "\$2" in
     --includes)
         printf '%s\n' '-I{{work_dir|shsqe}}/sysroot/{{arch|shsqe}}/usr/include/python3.7m';;
