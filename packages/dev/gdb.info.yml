@@ -1,0 +1,27 @@
+name: gdb
+version: 8.2.1
+url: https://ftp.gnu.org/gnu/gdb
+ext: tar.xz
+additional_doc_files: [COPYING.LIB, COPYING3, COPYING3.LIB, MAINTAINERS]
+depends:
+- arch/xz
+- base/glibc
+- base/ncurses
+- base/readline
+- base/zlib
+- lang/Python3
+- lib/expat
+- lib/mpfr
+autoconf_args:
+- '--sysconfdir=/etc'
+- '--disable-libstdcxx'
+- '--with-system-zlib'
+- '--without-mpc'
+- '--without-gmp'
+- '--without-isl'
+- '--with-system-readline'
+- '--without-guile'
+- '--without-intel-pt'
+- '--with-lzma'
+fix_ldflags: true
+source_file_sha256: '0a6a432907a03c5c8eaad3c3cffd50c00a40c3a5e3c4039440624bae703f2202'

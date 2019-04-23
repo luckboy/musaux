@@ -1,0 +1,119 @@
+{%- extends "templates/default.rules.yml" -%}
+
+{% block build_distclean_arch -%}
+"build_distclean_{{arch|ymlqe}}":
+  reqs:
+  - [toolchain, "build_toolchain_{{arch|ymlqe}}"]
+{%- for depend in (depends or []) %}
+  - ["{{depend|ymlqe}}", "build_dist_{{arch|ymlqe}}"]
+{%- endfor %}
+{%- if not toolchain %}
+  unmake: ["extract_{{arch|ymlqe}}"]
+{%- endif %}
+  cmd: |
+    '{{package_collection_dir|shsqe}}/scripts/sysroot.sh' \
+        '{{arch|shsqe}}' \
+        '{{package|shsqe}}' \
+        rm all
+{%- if toolchain %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-dist'
+{%- else %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}'
+{%- endif %}
+    rm -fr 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}'
+    rm -f 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}.suid_files'
+    rm -f 'build/{{arch|shsqe}}/{{package|shsqe}}/python3-config'
+{%- endblock %}
+
+{% block build_dist1_arch -%}
+"build_dist1_{{arch|ymlqe}}":
+  reqs: 
+  - "build_distclean_{{arch|ymlqe}}"
+  - "extract_{{arch|ymlqe}}"
+  cmd: |
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}'
+    saved_cwd="`pwd`"
+    cat > python3-config <<EOF
+    case "\$2" in
+    --includes)
+        printf '%s\n' '-I{{work_dir|shsqe}}/sysroot/{{arch|shsqe}}/usr/include/python3.7m';;
+    --ldflags)
+        printf '%s\n' '-lpthread -ldl -lutil -lpython3.7m';;
+    --exec-prefix)
+        printf '%s\n' '/usr';;
+    *)
+        echo "Bad argument" >&2; exit 1;; 
+    esac
+    EOF
+    chmod 755 python3-config
+    cd "$saved_cwd"
+{%- endblock %}
+
+
+{% block build_dist2_arch -%}
+"build_dist2_{{arch|ymlqe}}":
+  reqs: ["build_dist1_{{arch|ymlqe}}"]
+  cmd: |
+    saved_cwd="`pwd`"
+    cd 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}' && \
+    {{configure_for_autoconf(
+        (autoconf_args or []) + [
+            "--with-python=" + work_dir + "/build/" + arch + "/" + package + "/python3-config"
+        ],
+        {
+            "PKG_CONFIG_SYSROOT_DIR": work_dir + "/sysroot/" + arch
+        },
+        prefix = "/usr",
+        host = target,
+        enable_multilib = enable_multilib,
+        disable_multilib = disable_multilib,
+        enable_nls = enable_nls,
+        disable_nls = disable_nls,
+        enable_shared = enable_shared,
+        disable_shared = disable_shared,
+        enable_static = enable_static,
+        disable_static = disable_static,
+        build_dir = (toolchain or None) and (work_dir + "/build/" + arch + "/" + package + "/" + source_dir + "-dist"),
+        toolchain_dir = work_dir + "/toolchain/" + arch,
+        pkg_config = work_dir + "/toolchain/" + arch + "/bin/pkg-config",
+        ldflags = fix_ldflags and rpath_link_ldflags)}} && \
+{%- if fix_libtool %}
+    sed -i 's/^hardcode_libdir_flag_spec=.*/hardcode_libdir_flag_spec=""/' libtool && \
+    sed -i 's/^runpath_var=.*/runpath_var=""/' libtool && \
+{%- endif %}
+    {{make()}} && \
+    {{make(["-C" "gdb", "install", "DESTDIR=" + work_dir + "/dist/" + arch + "/packages/" + package])}} && \
+    {{leave_from_build_dir_for_autoconf()}} && \
+    cd "$saved_cwd"
+{%- endblock %}
+
+{% block clean_dist -%}
+clean_dist:
+  phony: true
+  unmake:
+{%- if not toolchain %}
+  - "extract_{{arch|ymlqe}}"
+{%- endif %}
+  - "build_distclean_{{arch|ymlqe}}"
+  - "build_dist1_{{arch|ymlqe}}"
+  - "build_dist2_{{arch|ymlqe}}"
+  - "build_dist3_{{arch|ymlqe}}"
+  - "build_dist4_{{arch|ymlqe}}"
+  - "build_dist5_{{arch|ymlqe}}"
+  - "build_dist6_{{arch|ymlqe}}"
+  - "build_dist7_{{arch|ymlqe}}"
+  - "build_dist_{{arch|ymlqe}}"
+  cmd: |
+    '{{package_collection_dir|shsqe}}/scripts/sysroot.sh' \
+        '{{arch|shsqe}}' \
+        '{{package|shsqe}}' \
+        rm all
+{%- if toolchain %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}-dist'
+{%- else %}
+    rm -fr 'build/{{arch|shsqe}}/{{package|shsqe}}/{{source_dir|shsqe}}'
+{%- endif %}
+    rm -fr 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}'
+    rm -f 'dist/{{arch|shsqe}}/packages/{{package|shsqe}}.suid_files'
+    rm -f 'build/{{arch|shsqe}}/{{package|shsqe}}/python3-config'
+{%- endblock %}
