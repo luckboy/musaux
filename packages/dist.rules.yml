@@ -114,7 +114,8 @@ build_root_dir:
         '{{package_collection_dir|shsqe}}' \
         '{{arch|shsqe}}' \
         '{{kernel_platform|shsqe}}' \
-        '{{root_img_size|shsqe}}'
+        '{{root_img_size|shsqe}}' \
+        '{{root_img_bytes_per_inode|shsqe}}'
 {%- for depend in (depends or []) %} \
         '{{depend|shsqe}}'
 {%- endfor %}

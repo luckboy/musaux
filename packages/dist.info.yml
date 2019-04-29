@@ -3,3 +3,4 @@ boot_package: 'boot/u-boot'
 kernel_package: base/linux
 boot_img_size: '16384'
 root_img_size: '3145728'
+root_img_bytes_per_inode: '32768'

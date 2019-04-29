@@ -4,7 +4,8 @@ package_collection_dir="$1"
 arch="$2"
 kernel_platform="$3"
 root_img_size="$4"
-shift 4
+root_img_bytes_per_inode="$5"
+shift 5
 packages="$*"
 
 root_uid="`awk -F : '/^root:/ { print($3); }' "$package_collection_dir/etc/passwd"`"
@@ -48,7 +49,7 @@ done
 genext2fs \
     -d "dist/$arch/root/$kernel_platform" \
     -D "dist/$arch/device_table-$kernel_platform.txt" \
-    -b "$root_img_size" -U \
+    -b "$root_img_size" -i "$root_img_bytes_per_inode" -U \
     "dist/$arch/root-$kernel_platform.img" || exit 1
     
 tune2fs -O dir_index,extents,has_journal,uninit_bg "dist/$arch/root-$kernel_platform.img" || exit 1
