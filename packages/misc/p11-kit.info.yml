@@ -1,4 +1,4 @@
-name: p11-kit
+name: 'p11-kit'
 version: 0.23.15
 url: 'https://github.com/p11-glue/p11-kit/releases/download/0.23.15'
 ext: tar.gz

@@ -1,4 +1,4 @@
-name: ca-certificates
+name: 'ca-certificates'
 version: '20190110'
 url: 'http://http.debian.net/debian/pool/main/c/ca-certificates'
 source_file: 'ca-certificates_20190110.tar.xz'
