@@ -3,7 +3,7 @@ version: 3.6.6
 url: 'https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6'
 ext: tar.xz
 additional_doc_files: [COPYING.LESSER]
-depends: [base/glibc, base/zlib, lib/libidn2, lib/libtasn1, lib/libunistring, lib/nettle, misc/p11-kit]
+depends: [base/glibc, base/zlib, lib/libidn2, lib/libtasn1, lib/libunistring, lib/nettle, 'misc/p11-kit']
 enable_shared: true
 enable_static: true
 autoconf: true
